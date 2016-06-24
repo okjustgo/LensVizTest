@@ -28,8 +28,8 @@ public class BarGraph : MonoBehaviour {
             {
                 float x = (float)i / ((float)Math.PI*1);
                 float y = (float)j / ((float)Math.PI*1);
-                data[i, j] = (float)Math.Sin(Math.Abs(x) + Math.Abs(y)) + 2 + (UnityEngine.Random.value/2);
-                //data[i, j] = (float)(x * Math.Pow(y, 3)) - (float)(y * Math.Pow(x, 3));
+                data[i, j] = (float)Math.Sin(Math.Abs(x) + Math.Abs(y))*2 + (UnityEngine.Random.value/2) + 2;
+                //data[i, j] = (float)Math.Abs((x * Math.Pow(y, 2)) - (float)(y * Math.Pow(x, 2)));
                 //data[i, j] = (float)(Math.Pow(x, 2) + 3 * Math.Pow(y, 2)) * (float)Math.Pow(Math.E, (Math.Pow(-x, 2) - Math.Pow(y, 2)));
             }
         }
