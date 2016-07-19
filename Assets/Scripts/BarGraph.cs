@@ -2,14 +2,21 @@
 using System.Collections;
 using System;
 
-public class BarGraph : MonoBehaviour {
+public class BarGraph : MonoBehaviour
+{
 
     public GameObject barPrefab;
 
     //private MeshRenderer meshRenderer;
     //private Mesh mesh;
     // Use this for initialization
-    void Start() {
+
+
+    //void OnSelect()
+    //{ }
+    void Start()
+    {
+
         // meshRenderer = this.gameObject.GetComponentInChildren<MeshRenderer>();
         var transform = this.gameObject.transform;
         Debug.Log(transform);
@@ -26,9 +33,9 @@ public class BarGraph : MonoBehaviour {
         {
             for (int j = 0; j < n; j++)
             {
-                float x = (float)i / ((float)Math.PI*1);
-                float y = (float)j / ((float)Math.PI*1);
-                data[i, j] = (float)Math.Sin(Math.Abs(x) + Math.Abs(y))*2 + (UnityEngine.Random.value/2) + 2;
+                float x = (float)i / ((float)Math.PI * 1);
+                float y = (float)j / ((float)Math.PI * 1);
+                data[i, j] = (float)Math.Sin(Math.Abs(x) + Math.Abs(y)) * 2 + (UnityEngine.Random.value / 2) + 2;
                 //data[i, j] = (float)Math.Abs((x * Math.Pow(y, 2)) - (float)(y * Math.Pow(x, 2)));
                 //data[i, j] = (float)(Math.Pow(x, 2) + 3 * Math.Pow(y, 2)) * (float)Math.Pow(Math.E, (Math.Pow(-x, 2) - Math.Pow(y, 2)));
             }
@@ -97,17 +104,18 @@ public class BarGraph : MonoBehaviour {
 
         //    //cube.transform.localPosition = new Vector3((i-2.5f)/2, 0, 0);
         //    //v3_itemSize.Scale(new Vector3(0.1f, 0, 0.1f));
-           
+
 
         //}
 
-        
-        
+
+
 
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
 }
