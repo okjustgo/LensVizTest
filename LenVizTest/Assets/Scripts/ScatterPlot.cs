@@ -546,31 +546,20 @@ public class ScatterPlot : MonoBehaviour
     {
         var transform = this.gameObject.transform;
 
-        GetDataFromAzure("holograph", "iris.hgd");
-
-        ParticleSystem particles = this.gameObject.GetComponentInChildren<ParticleSystem>();
-        int numPoints = data.GetLength(0);
-        points = new ParticleSystem.Particle[numPoints];
-        for(int i = 0; i < numPoints; i++)
-        {
-            points[i].position = new Vector3(data[i,1] + 0.5f, data[i,3] + 0.5f, data[i,2]/2 + 0.5f) / 2;
-            if (data[i, 0] == 0)
-            {
-                points[i].color = new Color(255, 0, 0);
-            }
-            if (data[i, 0] == 1)
-            {
-                points[i].color = new Color(0, 255, 0);
-            }
-            if (data[i, 0] == 2)
-            {
-                points[i].color = new Color(0, 0, 255);
-            }
-
-            points[i].size = 0.05f;
-        }
+        GetDataFromAzure("holograph", "irisData2.hgd");
         
-        particles.SetParticles(points, numPoints);
+        var x = new float[data.GetLength(0)];
+        var y = new float[data.GetLength(0)];
+        var z = new float[data.GetLength(0)];
+        var series = new float[data.GetLength(0)];
+        for(int i = 0; i < data.GetLength(0); i++)
+        {
+            x[i] = data[i, 1];
+            y[i] = data[i, 2];
+            z[i] = data[i, 3];
+            series[i] = data[i, 0];
+        }
+        Render(gameObject, x, y, z, series);
     }
 
     // Update is called once per frame
@@ -578,10 +567,83 @@ public class ScatterPlot : MonoBehaviour
     {
     }
 
+    public static void Render(GameObject gameObject, float[] x, float[] y, float[] z, float[] series)
+    {
+        if(!(x.Length == y.Length && y.Length == z.Length && z.Length == series.Length))
+        {
+            throw new ArgumentException("Length of x, y, z, and series to scatterplot must all be equal");
+        }
+
+        int numPoints = x.Length;
+        float xMin = float.MaxValue;
+        float xMax = float.MinValue;
+        float yMin = float.MaxValue;
+        float yMax = float.MinValue;
+        float zMin = float.MaxValue;
+        float zMax = float.MinValue;
+        for(long i = 0; i < numPoints; i++)
+        {
+            if (x[i] < xMin)
+            {
+                xMin = x[i];
+            }
+            if (x[i] > xMax)
+            {
+                xMax = x[i];
+            }
+
+            if (y[i] < yMin)
+            {
+                yMin = y[i];
+            }
+            if (y[i] > yMax)
+            {
+                yMax = y[i];
+            }
+
+            if (z[i] < zMin)
+            {
+                zMin = z[i];
+            }
+            if (z[i] > zMax)
+            {
+                zMax = z[i];
+            }
+        }
+        
+        var particles = gameObject.GetComponentInChildren<ParticleSystem>();
+        var points = new ParticleSystem.Particle[numPoints];
+        for (int i = 0; i < numPoints; i++)
+        {
+            // Scale point to range [0, 1].
+            float xVal = (x[i] - 1.0f*xMin) / (1.0f * xMax - 1.0f * xMin);
+            float yVal = (y[i] - 1.0f*yMin) / (1.0f * yMax - 1.0f * yMin);
+            float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin);
+            // Flip Z and Y so Z values scale vertically.
+            points[i].position = new Vector3(xVal, zVal, yVal);
+            if (series[i] == 1)
+            {
+                points[i].color = new Color(255, 0, 0);
+            }
+            if (series[i] == 2)
+            {
+                points[i].color = new Color(0, 255, 0);
+            }
+            if (series[i] == 3)
+            {
+                points[i].color = new Color(0, 0, 255);
+            }
+
+            points[i].size = 0.05f;
+        }
+
+        particles.SetParticles(points, numPoints);
+    }
+
     public void GetDataFromAzure(string containerName, string blobName)
     {
         var blobHelper = new AzureHelper("deftgeneralstorage", "<>");
-        var request = blobHelper.CreateGetBlobRequest("holograph", "irisData.hgd");
+        var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
 
         var requestState = new RequestState();
         requestState.request = request;
@@ -614,12 +676,14 @@ public class ScatterPlot : MonoBehaviour
             string firstLine = stream.ReadLine();
             if (firstLine == null)
             {
+                Debug.Log("Data file was empty");
                 throw new Exception("Data file was empty");
             }
 
             var s = firstLine.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
             if (s.Length != 2)
             {
+                Debug.Log("Couldn't read data size");
                 throw new Exception("Couldn't read data size");
             }
             int nrows = int.Parse(s[0]);
@@ -633,6 +697,7 @@ public class ScatterPlot : MonoBehaviour
                 s = line.Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
                 if (s.Length != ncols)
                 {
+                    Debug.Log("Wrong number of columns");
                     throw new Exception("Wrong number of columns");
                 }
 
