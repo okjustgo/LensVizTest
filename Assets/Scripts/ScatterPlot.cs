@@ -553,7 +553,7 @@ public class ScatterPlot : MonoBehaviour
         points = new ParticleSystem.Particle[numPoints];
         for(int i = 0; i < numPoints; i++)
         {
-            points[i].position = new Vector3(data[i,1] + 0.5f, data[i,3] + 0.5f, data[i,2] + 0.5f);
+            points[i].position = new Vector3(data[i,1] + 0.5f, data[i,3] + 0.5f, data[i,2]/2 + 0.5f) / 2;
             if (data[i, 0] == 0)
             {
                 points[i].color = new Color(255, 0, 0);
@@ -580,7 +580,7 @@ public class ScatterPlot : MonoBehaviour
 
     public void GetDataFromAzure(string containerName, string blobName)
     {
-        var blobHelper = new AzureHelper("<storage account name>", "<shared access key>");
+        var blobHelper = new AzureHelper("deftgeneralstorage", "Q8ZxP6sbmbAJy4jzTGxlxpkD7ki0zh/yHCDyI/Sme7uk22CkGuJ3n4YHg1Oi9UWEnlDC0Fc8spZjJI5DQ9bp5w==");
         var request = blobHelper.CreateGetBlobRequest("holograph", "irisData.hgd");
 
         var requestState = new RequestState();
