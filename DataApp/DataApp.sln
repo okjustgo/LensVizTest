@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataApp", "DataApp\DataApp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AzureLib", "AzureLib\AzureLib.csproj", "{73B5B2AB-21F2-48A9-93C2-07DFE04B40EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoloGraphData", "HoloGraphData\HoloGraphData.csproj", "{7E203724-E5AB-4F79-A297-C0E4DC474A26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{73B5B2AB-21F2-48A9-93C2-07DFE04B40EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73B5B2AB-21F2-48A9-93C2-07DFE04B40EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73B5B2AB-21F2-48A9-93C2-07DFE04B40EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E203724-E5AB-4F79-A297-C0E4DC474A26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E203724-E5AB-4F79-A297-C0E4DC474A26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E203724-E5AB-4F79-A297-C0E4DC474A26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E203724-E5AB-4F79-A297-C0E4DC474A26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

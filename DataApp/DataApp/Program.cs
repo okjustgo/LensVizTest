@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AzureLib;
 using System.IO;
+using HoloGraph;
 
 namespace DataApp
 {
@@ -14,24 +15,30 @@ namespace DataApp
         {
             var azure = new AzureDataSync("holograph");
 
-            var contents = File.ReadAllText("irisData.csv").Split('\n');
-            var csv = from line in contents
-                      select line.Split(',').ToArray();
+            var hgd = new HoloGraphData();
 
-            int headerRows = 5;
-            foreach (var row in csv.Skip(headerRows)
-                .TakeWhile(r => r.Length > 1 && r.Last().Trim().Length > 0))
-            {
-                String zerothColumnValue = row[0]; // leftmost column
-                var firstColumnValue = row[1];
-            }
+            hgd.ReadDataFromCSV("irisData.csv");                        
+                        
+            var headerStr = @"{
+                'type': 'scatter',
+                'hasSeries': true,
+            }";
+            hgd.SetHeader(headerStr);
+            //hgd.Data = finalData;
 
-            azure.Upload("testData.hgd", foo);
 
-            Stream foo;
-            azure.Download("testData.hgd", out foo);
+            Stream dataStream = new MemoryStream();
+            hgd.ToStream(ref dataStream);
+            dataStream.Seek(0, SeekOrigin.Begin);
+            //var sr = new StreamReader(dataStream);
 
-            
+            azure.Upload("testData.hgd", dataStream);
+
+            Stream outStream = new MemoryStream();
+            azure.Download("testData.hgd", ref outStream);
+            outStream.Seek(0, SeekOrigin.Begin);
+            var hgd2 = new HoloGraphData(outStream);
+
         }
     }
 }
