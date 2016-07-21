@@ -540,7 +540,7 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "scatterplot";
+        var whatToRender = "barplot";
         if(whatToRender == "scatterplot")
         {
             GetDataFromAzure("holograph", "irisData2.hgd");
@@ -560,8 +560,22 @@ public class Graph : MonoBehaviour {
         }
         if (whatToRender == "barplot")
         {
-            // TODO: Render bar graph based on data from azure
+            int n = 20;
+            var x = new float[n * n];
+            var y = new float[n * n];
+            var z = new float[n * n];
             
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    x[i + n * j] = i;
+                    y[i + n * j] = j;
+                    z[i + n * j] = (float)Math.Sin(Math.Abs(i / (float)Math.PI) + Math.Abs(j / (float)Math.PI)) * 2 + (UnityEngine.Random.value / 2) + 2;
+                }
+            }
+
+            BarGraph.Render(gameObject, x, y, z);
         }
 
     }
@@ -573,7 +587,7 @@ public class Graph : MonoBehaviour {
 
     public void GetDataFromAzure(string containerName, string blobName)
     {
-        var blobHelper = new AzureHelper("deftgeneralstorage", "Q8ZxP6sbmbAJy4jzTGxlxpkD7ki0zh/yHCDyI/Sme7uk22CkGuJ3n4YHg1Oi9UWEnlDC0Fc8spZjJI5DQ9bp5w==");
+        var blobHelper = new AzureHelper("deftgeneralstorage", "<>");
         var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
 
         var requestState = new RequestState();
