@@ -68,7 +68,7 @@ public class ScatterPlot : MonoBehaviour
                 zMax = z[i];
             }
         }
-        
+
         var particles = gameObject.GetComponentInChildren<ParticleSystem>();
         var points = new ParticleSystem.Particle[numPoints];
         for (int i = 0; i < numPoints; i++)

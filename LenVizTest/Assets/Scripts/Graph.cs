@@ -540,7 +540,7 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "barplot";
+        var whatToRender = "scatterplot";
         if(whatToRender == "scatterplot")
         {
             GetDataFromAzure("holograph", "irisData2.hgd");
