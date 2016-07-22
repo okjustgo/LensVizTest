@@ -26,13 +26,12 @@ namespace AzureLib
             container = blobClient.GetContainerReference(containerName);
         }
 
-        public void Download(string blobName, out Stream downStream)
+        public void Download(string blobName, ref Stream downStream)
         {
             
             // Retrieve reference to a blob named "myblob".
             CloudBlockBlob blockBlob = container.GetBlockBlobReference(blobName);
-
-            downStream = new MemoryStream();
+            
             blockBlob.DownloadToStream(downStream);
         }
 
