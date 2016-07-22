@@ -560,8 +560,8 @@ public class Graph : MonoBehaviour {
         }
         if (whatToRender == "barplot")
         {
-            int m = 30;
-            int n = 20;
+            int m = 80;
+            int n = 30;
             var x = new float[n * m];
             var y = new float[n * m];
             var z = new float[n * m];
@@ -572,7 +572,13 @@ public class Graph : MonoBehaviour {
                 {
                     x[i + n * j] = i;
                     y[i + n * j] = j;
-                    z[i + n * j] = (float)Math.Sin(Math.Abs(i / (float)Math.PI) + Math.Abs(j / (float)Math.PI)) * 2 + (UnityEngine.Random.value / 2) + 2;
+                    var X = 5f * (float)((2.0 * i - n) / n);
+                    var Y = 5f * (float)((2.0 * j - m) / m);
+                    var k = 4f;
+                    var w = 1.3f;
+                    var t = 6f;
+                    var R = (float)Math.Sqrt(X * X + Y * Y);
+                    z[i + n * j] = 0.5f*(float)Math.Sin(k*R + w*t)/((float)Math.Sqrt(Math.Pow((2.0 * i - n) / n, 2) + Math.Pow((2.0 * j - m) / m, 2)) + 1);
                 }
             }
 
