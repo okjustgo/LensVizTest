@@ -22,38 +22,83 @@ public class BarGraph : MonoBehaviour
             throw new ArgumentException("Length of x, y, z, and series to scatterplot must all be equal");
         }
 
+        int numBars = x.Length;
+        float xMin = float.MaxValue;
+        float xMax = float.MinValue;
+        float yMin = float.MaxValue;
+        float yMax = float.MinValue;
+        float zMin = float.MaxValue;
+        float zMax = float.MinValue;
+        for (long i = 0; i < numBars; i++)
+        {
+            if (x[i] < xMin)
+            {
+                xMin = x[i];
+            }
+            if (x[i] > xMax)
+            {
+                xMax = x[i];
+            }
+
+            if (y[i] < yMin)
+            {
+                yMin = y[i];
+            }
+            if (y[i] > yMax)
+            {
+                yMax = y[i];
+            }
+
+            if (z[i] < zMin)
+            {
+                zMin = z[i];
+            }
+            if (z[i] > zMax)
+            {
+                zMax = z[i];
+            }
+        }
+        int xNumBars = ((int)xMax - (int)xMin) + 1;
+        int yNumBars = ((int)yMax - (int)yMin) + 1;
+
         var transform = gameObject.transform;
 
         // Requires Bar.prefab in Resources folder.
         GameObject barPrefab = Resources.Load(@"Bar", typeof(GameObject)) as GameObject;
 
         var localScale = transform.localScale;
-        var localExtents = localScale; localExtents.Scale(new Vector3(0.5f, 0f, 0.5f));
-        
-        var start = new Vector3(-0.5f, 0, -0.5f);
-        
-        var curr = start;
+        var localExtents = localScale;
+        localExtents.Scale(new Vector3(0.5f, 0f, 0.5f));
 
-        int n = (int)Math.Sqrt(x.Length); // TODO: Figure this out dynamically from values in data, for now assume symmetric
-        var v3_itemSize = new Vector3(1f, 0f, 1f) / (float)n;
-        var v3_itemExtents = v3_itemSize / 2;
-        curr += v3_itemExtents;
+        var origin = new Vector3(-0.5f, 0, -0.5f);
 
-        var padding = v3_itemSize / 20;
-        var heightFactor = (v3_itemSize.x + v3_itemSize.z) / 2;
+        // Want to tile bars on a 1 x 1 base. Think about x dimension first:
+        // 1 = (xPad + xWidth + xPad) * xNumBars
+        // Restrict xPad to be 5% of width, so xPad = xWidth * 0.05,
+        // hence 1 = (1.1*xWidth) * xNumBars, solve for xWidth.
+        // Calculating yWidth uses the same formula.
+        float xWidth = (float)(1 / (1.1 * xNumBars));
+        float yWidth = (float)(1 / (1.1 * yNumBars));
+        float xPad = (float)(xWidth * 0.05);
+        float yPad = (float)(yWidth * 0.05);
+        
         for (int i = 0; i < x.Length; i += 1)
         {
-            var x0 = x[i];
-            var y0 = y[i];
-            var height = z[i] * heightFactor;
-            //var bar = GameObject.CreatePrimitive(PrimitiveType.Cube);
             var bar = Instantiate(barPrefab);
             bar.transform.parent = gameObject.transform;
-            var pos = start + new Vector3(x0 / (float)n, 0f, y0 / (float)n) + v3_itemExtents;
+
+            var xVal = (int)(x[i] - xMin);
+            var yVal = (int)(y[i] - yMin);
+            var height = (z[i] - zMin) / (zMax - zMin);   // Restrict height to range [0,1] (fitting within a 1 x 1 x 1 cube)
+            
+            // Place bar within the area of the base.
+            var xPos = xVal * (2 * xPad + xWidth) + (xPad + xWidth / 2);
+            var yPos = yVal * (2 * yPad + yWidth) + (yPad + yWidth / 2);
+            var pos = origin + new Vector3(xPos, 0f, yPos);// + v3_itemExtents;
+            // Translate bar to sit directly on top of base.
             bar.transform.localPosition = pos + new Vector3(0, height / 2 - 0.5f, 0);
-            bar.transform.localScale = v3_itemSize + new Vector3(0f, height, 0f) - padding;
+            bar.transform.localScale = new Vector3(xWidth, height, yWidth);
             bar.transform.rotation = gameObject.transform.rotation;
-            curr += v3_itemSize;
         }
     }
 }

@@ -560,14 +560,15 @@ public class Graph : MonoBehaviour {
         }
         if (whatToRender == "barplot")
         {
+            int m = 30;
             int n = 20;
-            var x = new float[n * n];
-            var y = new float[n * n];
-            var z = new float[n * n];
+            var x = new float[n * m];
+            var y = new float[n * m];
+            var z = new float[n * m];
             
             for (int i = 0; i < n; i++)
             {
-                for (int j = 0; j < n; j++)
+                for (int j = 0; j < m; j++)
                 {
                     x[i + n * j] = i;
                     y[i + n * j] = j;
