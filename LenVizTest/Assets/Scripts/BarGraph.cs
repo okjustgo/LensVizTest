@@ -19,7 +19,7 @@ public class BarGraph : MonoBehaviour
     {
         if (!(x.Length == y.Length && y.Length == z.Length))
         {
-            throw new ArgumentException("Length of x, y, z, and series to scatterplot must all be equal");
+            throw new ArgumentException("Length of x, y, and z to barplot must all be equal");
         }
 
         int numBars = x.Length;

@@ -540,7 +540,7 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "barplot";
+        var whatToRender = "surface";
         if(whatToRender == "scatterplot")
         {
             GetDataFromAzure("holograph", "irisData2.hgd");
@@ -580,7 +580,28 @@ public class Graph : MonoBehaviour {
 
             BarGraph.Render(gameObject, x, y, z);
         }
+        if (whatToRender == "surface")
+        {
+            int m = 50;
+            int n = 50;
+            var x = new float[n * m];
+            var y = new float[n * m];
+            var z = new float[n * m];
 
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    x[i + n * j] = i;
+                    y[i + n * j] = j;
+                    var X = 7f * (float)((2.0 * i - n) / n);
+                    var Y = 7f * (float)((2.0 * j - m) / m);
+                    z[i + n * j] = 0.5f * (float)(Math.Sin(X + Y) + Math.Sin(X - Y));
+                }
+            }
+
+            SurfaceChart.Render(gameObject, x, y, z);
+        }
     }
 	
 	// Update is called once per frame
