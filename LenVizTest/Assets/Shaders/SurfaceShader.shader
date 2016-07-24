@@ -1,6 +1,6 @@
 ﻿Shader "Custom/BlendVertexColors" {
-	SubShader{
-		Pass{
+	SubShader {
+		Pass {
 			CGPROGRAM
 			#pragma vertex vert
 			#pragma fragment frag

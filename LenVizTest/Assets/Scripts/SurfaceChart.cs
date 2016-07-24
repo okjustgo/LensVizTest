@@ -74,8 +74,9 @@ public class SurfaceChart : MonoBehaviour
         var mesh = new Mesh();
         meshFilter.mesh = mesh;
 
-        // Set vertices of surface mesh
-        var vertices = new Vector3[xRange * yRange];
+        // Set vertices of surface mesh.
+        // Make duplicate ones so we can have "double-sided" triangles.
+        var vertices = new Vector3[2 * xRange * yRange];
         var uv = new Vector2[vertices.Length];
         for(int i = 0; i < xRange; i++)
         {
@@ -86,6 +87,8 @@ public class SurfaceChart : MonoBehaviour
                 var zVal = (z[i + j * xRange] - zMin) / (zMax - zMin) - 0.5f;
                 vertices[i + j * xRange] = new Vector3(xVal, zVal, yVal);
                 uv[i + j * xRange] = new Vector2(xVal + 0.5f, yVal + 0.5f);
+                vertices[i + j * xRange + xRange * yRange] = new Vector3(xVal, zVal, yVal);
+                uv[i + j * xRange + xRange * yRange] = new Vector2(xVal + 0.5f, yVal + 0.5f);
             }
         }
         mesh.vertices = vertices;
@@ -94,17 +97,26 @@ public class SurfaceChart : MonoBehaviour
         // Set triangles of mesh (it's not visible without them!)
         // Also, double the number of triangles you would normally use,
         // since we want surface "solid" from both sides
-        var triangles = new int[xRange * yRange * 6];
+        var triangles = new int[2 * xRange * yRange * 6];
         for(int i = 0, ti = 0; i < xRange - 1; i++)
         {
-            for(int j = 0; j < yRange - 1; j++, ti += 6)
+            for(int j = 0; j < yRange - 1; j++, ti += 12)
             {
+                // Triangles one way
                 triangles[ti] = i + j * xRange;
                 triangles[ti + 1] = i + j * xRange + xRange;
                 triangles[ti + 2] = i + j * xRange + 1;
                 triangles[ti + 3] = i + j * xRange + 1;
                 triangles[ti + 4] = i + j * xRange + xRange;
                 triangles[ti + 5] = i + j * xRange + xRange + 1;
+
+                // Triangles the other way (so when you view surface from other side it doesn't disappear)
+                triangles[ti + 6] = i + j * xRange;
+                triangles[ti + 7] = i + j * xRange + 1;
+                triangles[ti + 8] = i + j * xRange + xRange;
+                triangles[ti + 9] = i + j * xRange + 1;
+                triangles[ti + 10] = i + j * xRange + xRange + 1;
+                triangles[ti + 11] = i + j * xRange + xRange;
             }
         }
         mesh.triangles = triangles;
