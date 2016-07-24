@@ -1,31 +1,30 @@
-﻿Shader "Custom/BlendVertexColors" {
-	SubShader {
-		Pass {
-			CGPROGRAM
-			#pragma vertex vert
-			#pragma fragment frag
-
-			struct VertexData {
-				float4 position : POSITION;
-				fixed4 color : COLOR;
-			};
-
-			struct FragData {
-				float4 position : SV_POSITION;
-				fixed4 color : COLOR;
-			};
-
-			FragData vert(VertexData v) {
-				FragData o;
-				o.position = mul(UNITY_MATRIX_MVP, v.position);
-				o.color = v.color;
-				return o;
-			}
-
-			fixed4 frag(FragData i) : SV_Target {
-				return i.color;
-			}
-			ENDCG
-		}
+﻿Shader "Diffuse with Vertex Colors" {
+	Properties{
+		_MainTex("Base (RGB)", 2D) = "white" {}
 	}
+	
+	SubShader{
+		Tags{ "RenderType" = "Opaque" }
+		LOD 200
+
+		CGPROGRAM
+		#pragma surface surf Lambert
+
+		sampler2D _MainTex;
+
+		struct Input {
+			float2 uv_MainTex;
+			fixed4 color : COLOR;
+		};
+
+		void surf(Input IN, inout SurfaceOutput o) {
+			o.Albedo = IN.color.rgb;
+			o.Alpha = IN.color.a;
+			o.Specular = 0.3;
+			o.Gloss = 0.5;
+		}
+		ENDCG
+	}
+	
+	Fallback "VertexLit"
 }
