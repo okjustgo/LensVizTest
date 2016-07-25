@@ -115,7 +115,7 @@ public class SurfaceChart : MonoBehaviour
         // Set triangles of mesh (it's not visible without them!)
         // Also, double the number of triangles you would normally use,
         // since we want surface "solid" from both sides
-        var triangles = new int[xRange * yRange * 6];
+        var triangles = new int[(xRange - 1) * (yRange - 1) * 6];
         for(int i = 0, ti = 0; i < xRange - 1; i++)
         {
             for(int j = 0; j < yRange - 1; j++, ti += 6)
@@ -131,7 +131,7 @@ public class SurfaceChart : MonoBehaviour
         }
         frontMesh.mesh.triangles = triangles;
 
-        triangles = new int[xRange * yRange * 6];
+        triangles = new int[(xRange - 1) * (yRange - 1) * 6];
         for (int i = 0, ti = 0; i < xRange - 1; i++)
         {
             for (int j = 0; j < yRange - 1; j++, ti += 6)
