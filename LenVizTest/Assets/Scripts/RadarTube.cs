@@ -5,13 +5,13 @@ using System.Collections.Generic;
 public class RadarTube : MonoBehaviour
 {
     private static Color[] availableColors = new Color[] {
-        new Color(255, 0, 0),
-        new Color(0, 255, 0),
-        new Color(0, 0, 255),
-        new Color(255, 255, 0),
-        new Color(255, 0, 255),
-        new Color(255, 255, 0),
-        new Color(0, 255, 255)
+        new Color(1, 0, 0),
+        new Color(0, 1, 0),
+        new Color(0, 0, 1),
+        new Color(1, 1, 0),
+        new Color(1, 0, 1),
+        new Color(1, 1, 0),
+        new Color(0, 1, 1)
     };
 
     // Use this for initialization
@@ -79,7 +79,7 @@ public class RadarTube : MonoBehaviour
         meshFilter.mesh = mesh;
 
         // Set vertices of surface mesh.
-        var radius = 0.45;
+        var radius = 0.5;
         var angle = 2 * Math.PI / numRadarPoints;
         var vertices = new Vector3[numLevels * numRadarPoints];
         var uv = new Vector2[vertices.Length];
@@ -91,7 +91,7 @@ public class RadarTube : MonoBehaviour
                 var magnitude = (R[i, j] - radarMins[j]) / (radarMaxs[j] - radarMins[j]);
                 var xVal = radius * magnitude * Math.Cos(j * angle);
                 var yVal = radius * magnitude * Math.Sin(j * angle);
-                var zVal = level;
+                var zVal = level - 0.5f;
                 vertices[i * numRadarPoints + j] = new Vector3((float)xVal, zVal, (float)yVal);
                 uv[i * numRadarPoints + j] = new Vector2((float)i / numLevels, (float)j / numRadarPoints);
             }

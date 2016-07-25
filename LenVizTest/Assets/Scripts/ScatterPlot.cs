@@ -3,16 +3,16 @@ using System;
 
 public class ScatterPlot : MonoBehaviour
 {
-    private Color[] availableColors = new Color[] {
-        new Color(255, 255, 255),
-        new Color(255, 0, 0),
-        new Color(0, 255, 0),
-        new Color(0, 0, 255),
-        new Color(255, 255, 0),
-        new Color(255, 0, 255),
-        new Color(255, 255, 0),
-        new Color(0, 255, 255)
+    private static Color[] availableColors = new Color[] {
+        new Color(1, 0, 0),
+        new Color(0, 1, 0),
+        new Color(0, 0, 1),
+        new Color(1, 1, 0),
+        new Color(1, 0, 1),
+        new Color(1, 1, 0),
+        new Color(0, 1, 1)
     };
+
     // Use this for initialization
     void Start()
     {
