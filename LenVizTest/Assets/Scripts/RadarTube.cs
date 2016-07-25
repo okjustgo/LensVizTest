@@ -64,20 +64,25 @@ public class RadarTube : MonoBehaviour
                 }
             }
         }
-        
-        // Find the right mesh filter.
-        MeshFilter meshFilter = null;
+
+        // Get the mesh filters.
+        MeshFilter frontMesh = null;
+        MeshFilter backMesh = null;
         var meshFilters = gameObject.GetComponentsInChildren<MeshFilter>();
         for (int i = 0; i < meshFilters.Length; i++)
         {
             if (meshFilters[i].name == "FrontSurfaceRenderer")
             {
-                meshFilter = meshFilters[i];
+                frontMesh = meshFilters[i];
+            }
+            if (meshFilters[i].name == "BackSurfaceRenderer")
+            {
+                backMesh = meshFilters[i];
             }
         }
-        var mesh = new Mesh();
-        meshFilter.mesh = mesh;
-
+        frontMesh.mesh = new Mesh();
+        backMesh.mesh = new Mesh();
+        
         // Set vertices of surface mesh.
         var radius = 0.5;
         var angle = 2 * Math.PI / numRadarPoints;
@@ -96,8 +101,26 @@ public class RadarTube : MonoBehaviour
                 uv[i * numRadarPoints + j] = new Vector2((float)i / numLevels, (float)j / numRadarPoints);
             }
         }
-        mesh.vertices = vertices;
-        mesh.uv = uv;
+        frontMesh.mesh.vertices = vertices;
+        frontMesh.mesh.uv = uv;
+
+        vertices = new Vector3[numLevels * numRadarPoints];
+        uv = new Vector2[vertices.Length];
+        for (int i = 0; i < numLevels; i++)
+        {
+            var level = (t[i] - tMin) / (tMax - tMin);
+            for (int j = 0; j < numRadarPoints; j++)
+            {
+                var magnitude = (R[i, j] - radarMins[j]) / (radarMaxs[j] - radarMins[j]);
+                var xVal = radius * magnitude * Math.Cos(j * angle);
+                var yVal = radius * magnitude * Math.Sin(j * angle);
+                var zVal = level - 0.5f;
+                vertices[i * numRadarPoints + j] = new Vector3((float)xVal, zVal, (float)yVal);
+                uv[i * numRadarPoints + j] = new Vector2((float)i / numLevels, (float)j / numRadarPoints);
+            }
+        }
+        backMesh.mesh.vertices = vertices;
+        backMesh.mesh.uv = uv;
 
         // Set triangles of mesh (it's not visible without them!)
         var triangles = new int[(numLevels - 1) * numRadarPoints * 6];
@@ -126,16 +149,52 @@ public class RadarTube : MonoBehaviour
                 }
             }
         }
-        mesh.triangles = triangles;
+        frontMesh.mesh.triangles = triangles;
+
+        // Set up triangles of back mesh (so it looks 'solid' from both sides)
+        triangles = new int[(numLevels - 1) * numRadarPoints * 6];
+        for (int i = 0, ti = 0; i < numLevels - 1; i++)
+        {
+            for (int j = 0; j < numRadarPoints; j++, ti += 6)
+            {
+                if (j < numRadarPoints - 1)
+                {
+                    triangles[ti] = i * numRadarPoints + j;
+                    triangles[ti + 1] = i * numRadarPoints + j + 1;
+                    triangles[ti + 2] = i * numRadarPoints + j + numRadarPoints;
+                    triangles[ti + 3] = i * numRadarPoints + j + 1;
+                    triangles[ti + 4] = i * numRadarPoints + j + numRadarPoints + 1;
+                    triangles[ti + 5] = i * numRadarPoints + j + numRadarPoints;
+                }
+                else
+                {
+                    // Add another two triangles to form a quad which closes this layer.
+                    triangles[ti] = i * numRadarPoints + j;
+                    triangles[ti + 1] = i * numRadarPoints + j + 1 - numRadarPoints;
+                    triangles[ti + 2] = i * numRadarPoints + j + numRadarPoints;
+                    triangles[ti + 3] = i * numRadarPoints + j + 1 - numRadarPoints;
+                    triangles[ti + 4] = i * numRadarPoints + j + 1;
+                    triangles[ti + 5] = i * numRadarPoints + j + numRadarPoints;
+                }
+            }
+        }
+        backMesh.mesh.triangles = triangles;
 
         var colors = new Color[vertices.Length];
         for (int i = 0; i < vertices.Length; i++)
         {
             colors[i] = availableColors[i % numRadarPoints];
         }
-        mesh.SetColors(new List<Color>(colors));
-        
-        mesh.RecalculateNormals();
-        
+        frontMesh.mesh.SetColors(new List<Color>(colors));
+
+        colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            colors[i] = availableColors[i % numRadarPoints];
+        }
+        backMesh.mesh.SetColors(new List<Color>(colors));
+
+        frontMesh.mesh.RecalculateNormals();
+        backMesh.mesh.RecalculateNormals();
     }
 }
