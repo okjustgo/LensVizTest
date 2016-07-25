@@ -537,13 +537,34 @@ public class RequestState
 
 public class Graph : MonoBehaviour {
 
+    public enum PivotAxis
+    {
+        // Rotate about all axes.
+        Free,
+        // Rotate about an individual axis.
+        X,
+        Y
+    }
+
     private float[,] data;
     private Text title;
 
-    // Use this for initialization
-    void Start () {
+    // The axis about which the object will rotate.
+    private PivotAxis pivotAxis = PivotAxis.Free;
+
+    // Overrides the cached value of the title's default rotation.
+    public Quaternion titleDefaultRotation { get; private set; }
+
+    void Awake()
+    {
         title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
 
+        // Cache the title's default rotation.
+        titleDefaultRotation = title.transform.rotation;
+    }
+
+    // Use this for initialization
+    void Start () {
         var whatToRender = "surface";
         if(whatToRender == "scatterplot")
         {
@@ -613,8 +634,41 @@ public class Graph : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+        updateTitlePivotAxis();
 	}
+
+    // Keeps the title facing the camera.
+    private void updateTitlePivotAxis()
+    {
+        // Get a Vector that points from the Camera to the target.
+        Vector3 directionToTarget = Camera.main.transform.position - title.transform.position;
+
+        // If we are right next to the camera the rotation is undefined.
+        if (directionToTarget.sqrMagnitude < Mathf.Epsilon)
+        {
+            return;
+        }
+
+        // Adjust for the pivot axis.
+        switch (pivotAxis)
+        {
+            case PivotAxis.X:
+                directionToTarget.x = title.transform.position.x;
+                break;
+
+            case PivotAxis.Y:
+                directionToTarget.y = title.transform.position.y;
+                break;
+
+            case PivotAxis.Free:
+            default:
+                // No changes needed.
+                break;
+        }
+
+        // Calculate and apply the rotation required to reorient the object and apply the default rotation to the result.
+        title.transform.rotation = Quaternion.LookRotation(-directionToTarget) * titleDefaultRotation;
+    }
 
     public void GetDataFromAzure(string containerName, string blobName)
     {
