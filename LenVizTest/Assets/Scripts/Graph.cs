@@ -542,12 +542,12 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        title = GameObject.Find("/Canvas/Title").GetComponent<Text>();
-        title.text = "Graph Demo";
+        title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
 
         var whatToRender = "surface";
         if(whatToRender == "scatterplot")
         {
+            title.text = "Scatter Plot";
             GetDataFromAzure("holograph", "irisData2.hgd");
 
             var x = new float[data.GetLength(0)];
@@ -565,6 +565,7 @@ public class Graph : MonoBehaviour {
         }
         if (whatToRender == "barplot")
         {
+            title.text = "Bar Graph";
             int m = 50;
             int n = 50;
             var x = new float[n * m];
@@ -587,6 +588,7 @@ public class Graph : MonoBehaviour {
         }
         if (whatToRender == "surface")
         {
+            title.text = "Surface Chart";
             int m = 50;
             int n = 50;
             var x = new float[n * m];
