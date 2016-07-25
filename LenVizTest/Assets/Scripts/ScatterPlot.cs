@@ -79,18 +79,18 @@ public class ScatterPlot : MonoBehaviour
             points[i].position = new Vector3(xVal, zVal, yVal);
             if (series[i] == 1)
             {
-                points[i].color = new Color(255, 0, 0);
+                points[i].startColor = new Color(255, 0, 0);
             }
             if (series[i] == 2)
             {
-                points[i].color = new Color(0, 255, 0);
+                points[i].startColor = new Color(0, 255, 0);
             }
             if (series[i] == 3)
             {
-                points[i].color = new Color(0, 0, 255);
+                points[i].startColor = new Color(0, 0, 255);
             }
 
-            points[i].size = 0.05f;
+            points[i].startSize = 0.05f;
         }
 
         particles.SetParticles(points, numPoints);

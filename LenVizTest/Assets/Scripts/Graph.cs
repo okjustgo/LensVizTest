@@ -536,14 +536,18 @@ public class RequestState
 
 public class Graph : MonoBehaviour {
 
+    private bool shouldRender = false;
     private float[,] data;
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "surface";
-        if(whatToRender == "scatterplot")
+        var whatToRender = "scatterplot"; //scatterplot
+        if (whatToRender == "scatterplot")
         {
+            Debug.Log("Getting Data From Azure");
             GetDataFromAzure("holograph", "irisData2.hgd");
+
+            //GetDataFromAzure2("holograph", "testData.hgd");
 
             var x = new float[data.GetLength(0)];
             var y = new float[data.GetLength(0)];
@@ -606,12 +610,17 @@ public class Graph : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+
+        if (shouldRender)
+        {
+            shouldRender = false;
+            Debug.Log("I RENDER");
+        }
 	}
 
     public void GetDataFromAzure(string containerName, string blobName)
     {
-        var blobHelper = new AzureHelper("deftgeneralstorage", "<>");
+        var blobHelper = new AzureHelper("deftgeneralstorage", "uv5+dFwxSWgyirOtIPCDeWbFeWwbFcjRkBA9/lYhUT90d6mlD6sCgv8BmCY0zJVkLZ1DqQ2P1aO+e8IVlMSsEg==");
         var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
 
         var requestState = new RequestState();
@@ -619,7 +628,26 @@ public class Graph : MonoBehaviour {
 
         IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
 
-        WaitHandle.WaitAll(new[] { requestState.isThisDone }, 60 * 1000);
+        WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
+    }
+
+    public void GetDataFromAzure2(string containerName, string blobName)
+    {
+        var blobHelper = new AzureHelper("deftgeneralstorage", "uv5+dFwxSWgyirOtIPCDeWbFeWwbFcjRkBA9/lYhUT90d6mlD6sCgv8BmCY0zJVkLZ1DqQ2P1aO+e8IVlMSsEg==");
+        var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
+
+        var requestState = new RequestState();
+        requestState.request = request;
+
+        //IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
+
+        var response = request.GetResponse();
+        Stream s = response.GetResponseStream();
+        byte[] b = new byte[4];
+        s.Read(b, 0, 4);
+        int i = BitConverter.ToInt32(b, 0);
+        Debug.Log(i);
+        //WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
     }
 
     private void ResponseCallback(IAsyncResult result)
@@ -677,6 +705,10 @@ public class Graph : MonoBehaviour {
             }
 
             requestState.isThisDone.Set();
+
+
+            this.shouldRender = true;
+            Debug.Log("setting should render");            
 
             return;
         }
