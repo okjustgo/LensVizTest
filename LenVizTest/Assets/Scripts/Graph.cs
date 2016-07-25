@@ -565,7 +565,7 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "surface";
+        var whatToRender = "radartube";
         if(whatToRender == "scatterplot")
         {
             title.text = "Scatter Plot";
@@ -629,6 +629,52 @@ public class Graph : MonoBehaviour {
             }
 
             SurfaceChart.Render(gameObject, x, y, z);
+        }
+        if (whatToRender == "radartube")
+        {
+            // From Kaggle bikeshare competition.
+            // Schema is: "year + month","temp","humidity","windspeed","casual","registered"
+            // For each year/month (from Jan 2011 - Dec 2012) gives median value for each other variable.
+            data = new float[,]
+            {
+                { 0f, 0.183673469387755f, 0.51f, 0.228047490302104f, 2f, 43f },
+                { 1f, 0.224489795918367f, 0.495f, 0.263195015869284f, 4f, 52.5f },
+                { 2f, 0.326530612244898f, 0.565f, 0.263195015869284f, 9f, 56f },
+                { 3f, 0.408163265306122f, 0.67f, 0.263195015869284f, 12f, 65f },
+                { 4f, 0.510204081632653f, 0.77f, 0.228047490302104f, 27f, 120f },
+                { 5f, 0.673469387755102f, 0.58f, 0.193017514987657f, 32f, 134.5f },
+                { 6f, 0.714285714285714f, 0.61f, 0.193017514987657f, 39f, 123.5f },
+                { 7f, 0.714285714285714f, 0.62f, 0.228047490302104f, 32f, 115.5f },
+                { 8f, 0.612244897959184f, 0.73f, 0.193017514987657f, 23f, 115f },
+                { 9f, 0.510204081632653f, 0.76f, 0.157869989420477f, 20f, 115f },
+                { 10f, 0.36734693877551f, 0.63f, 0.193017514987657f, 12f, 114.5f },
+                { 11f, 0.285714285714286f, 0.625f, 0.193017514987657f, 7f, 101f },
+                { 12f, 0.244897959183673f, 0.51f, 0.263195015869284f, 6f, 88f },
+                { 13f, 0.285714285714286f, 0.56f, 0.193017514987657f, 6f, 107f },
+                { 14f, 0.428571428571429f, 0.55f, 0.228047490302104f, 16f, 144f },
+                { 15f, 0.469387755102041f, 0.43f, 0.263195015869284f, 34f, 165f },
+                { 16f, 0.571428571428572f, 0.675f, 0.193017514987657f, 37f, 181.5f },
+                { 17f, 0.612244897959184f, 0.585f, 0.228047490302104f, 45f, 193f },
+                { 18f, 0.755102040816326f, 0.555f, 0.157869989420477f, 49f, 182f },
+                { 19f, 0.714285714285714f, 0.66f, 0.193017514987657f, 53f, 183.5f },
+                { 20f, 0.653061224489796f, 0.7f, 0.193017514987657f, 34f, 190f },
+                { 21f, 0.510204081632653f, 0.69f, 0.193017514987657f, 27f, 197f },
+                { 22f, 0.326530612244898f, 0.56f, 0.228047490302104f, 17f, 174f },
+                { 23f, 0.346938775510204f, 0.75f, 0.157869989420477f, 13f, 169f }
+            };
+
+            var t = new float[data.GetLength(0)];
+            var R = new float[data.GetLength(0), data.GetLength(1) - 1];
+            for(int i = 0; i < data.GetLength(0); i++)
+            {
+                t[i] = data[i,0];
+                for(int j = 1; j < data.GetLength(1); j++)
+                {
+                    R[i, j - 1] = data[i, j];
+                }
+            }
+
+            RadarTube.Render(gameObject, t, R);
         }
     }
 	
