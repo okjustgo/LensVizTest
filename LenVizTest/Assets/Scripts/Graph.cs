@@ -7,6 +7,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Threading;
+using UnityEngine.UI;
 
 public class Sha256
 {
@@ -537,9 +538,13 @@ public class RequestState
 public class Graph : MonoBehaviour {
 
     private float[,] data;
+    private Text title;
 
     // Use this for initialization
     void Start () {
+        title = GameObject.Find("/Canvas/Title").GetComponent<Text>();
+        title.text = "Graph Demo";
+
         var whatToRender = "surface";
         if(whatToRender == "scatterplot")
         {
