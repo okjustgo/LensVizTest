@@ -636,6 +636,7 @@ public class Graph : MonoBehaviour {
         }
         if (whatToRender == "radartube")
         {
+            title.text = "Radar Tube";
             // From Kaggle bikeshare competition.
             // Schema is: "year + month","temp","humidity","windspeed","casual","registered"
             // For each year/month (from Jan 2011 - Dec 2012) gives median value for each other variable.
