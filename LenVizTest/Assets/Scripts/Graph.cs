@@ -549,6 +549,7 @@ public class Graph : MonoBehaviour {
     private bool shouldRender = false;
     private float[,] data;
     private Text title;
+    private GameObject tooltipPrefab, tooltip;
 
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
@@ -559,6 +560,9 @@ public class Graph : MonoBehaviour {
     void Awake()
     {
         title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
+        tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
+        tooltip = Instantiate(tooltipPrefab);
+        tooltip.transform.parent = GameObject.Find("/Graph/Canvas").transform;
 
         // Cache the title's default rotation.
         titleDefaultRotation = title.transform.rotation;
@@ -566,7 +570,7 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "scatterplot"; //scatterplot
+        var whatToRender = "barplot"; //scatterplot
         if (whatToRender == "scatterplot")
         {
             Debug.Log("Getting Data From Azure");
@@ -686,6 +690,29 @@ public class Graph : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         updateTitlePivotAxis();
+
+        var origin = new Vector3(-0.5f, -0.5f, -5);
+        RaycastHit hitInfo;
+        if (Physics.Raycast(
+                Camera.main.transform.position,
+                Camera.main.transform.forward,
+                out hitInfo,
+                20.0f,
+                Physics.DefaultRaycastLayers))
+        {
+            // If the Raycast has succeeded and hit a hologram
+            // hitInfo's point represents the position being gazed at
+            // hitInfo's collider GameObject represents the hologram being gazed at
+            // Requires Tooltip.prefab in Resources folder.
+            tooltip.transform.localPosition = origin + new Vector3(hitInfo.point.x, hitInfo.point.y, 0);
+            tooltip.transform.rotation = gameObject.transform.rotation;
+            var tooltipText = tooltip.transform.GetComponent<Text>();
+            tooltipText.text = hitInfo.point.ToString();
+        } else
+        {
+            var tooltipText = tooltip.transform.GetComponent<Text>();
+            tooltipText.text = "";
+        }
 
         if (shouldRender)
         {
