@@ -585,9 +585,26 @@ public class Graph : MonoBehaviour {
 
         keywords.Add("Show bar graph", () =>
         {
-            title.text = "Bar Graph";
             whatToRender = "barplot";
             renderGraph();  
+        });
+
+        keywords.Add("Show scatter plot", () =>
+        {
+            whatToRender = "scatterplot";
+            renderGraph();
+        });
+
+        keywords.Add("Show surface chart", () =>
+        {
+            whatToRender = "surface";
+            renderGraph();
+        });
+
+        keywords.Add("Show radar tube", () =>
+        {
+            whatToRender = "radartube";
+            renderGraph();
         });
 
         // Tell the KeywordRecognizer about our keywords.
