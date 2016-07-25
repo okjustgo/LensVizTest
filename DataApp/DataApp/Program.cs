@@ -17,7 +17,7 @@ namespace DataApp
 
             var hgd = new HoloGraphData();
 
-            hgd.ReadDataFromCSV("irisData.csv");                        
+            hgd.ReadDataFromCSV(@"C:\Users\kerussel\Desktop\mtcars.csv");                        
                         
             var headerStr = @"{
                 'type': 'scatter',
