@@ -748,15 +748,15 @@ public class Graph : MonoBehaviour {
         var requestState = new RequestState();
         requestState.request = request;
 
-        //IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
+        IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
 
-        var response = request.GetResponse();
-        Stream s = response.GetResponseStream();
-        byte[] b = new byte[4];
-        s.Read(b, 0, 4);
-        int i = BitConverter.ToInt32(b, 0);
-        Debug.Log(i);
-        //WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
+        //var response = request.GetResponse();
+        //Stream s = response.GetResponseStream();
+        //byte[] b = new byte[4];
+        //s.Read(b, 0, 4);
+        //int i = BitConverter.ToInt32(b, 0);
+        //Debug.Log(i);
+        WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
     }
 
     private void ResponseCallback(IAsyncResult result)
