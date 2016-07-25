@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Threading;
 using UnityEngine.UI;
+using UnityEngine.Windows.Speech;
+using System.Linq;
 
 public class Sha256
 {
@@ -550,6 +552,9 @@ public class Graph : MonoBehaviour {
     private float[,] data;
     private Text title;
     private GameObject tooltipPrefab, tooltip;
+    private KeywordRecognizer keywordRecognizer = null;
+    private Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
+    private string whatToRender;
 
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
@@ -570,7 +575,78 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "barplot"; //scatterplot
+
+        // initialize voice recognition
+        keywords.Add("Reset world", () =>
+        {
+            // Call the OnReset method on every descendant object.
+            this.BroadcastMessage("OnReset");
+        });
+
+        keywords.Add("Show bar graph", () =>
+        {
+            title.text = "Bar Graph";
+            whatToRender = "barplot";
+            renderGraph();  
+        });
+
+        // Tell the KeywordRecognizer about our keywords.
+        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
+
+        // Register a callback for the KeywordRecognizer and start recognizing!
+        keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
+        keywordRecognizer.Start();
+
+        renderGraph();
+    }
+	
+	// Update is called once per frame
+	void Update () {
+        updateTitlePivotAxis();
+
+        var origin = new Vector3(-0.5f, -0.5f, -5);
+        RaycastHit hitInfo;
+        if (Physics.Raycast(
+                Camera.main.transform.position,
+                Camera.main.transform.forward,
+                out hitInfo,
+                20.0f,
+                Physics.DefaultRaycastLayers))
+        {
+            // If the Raycast has succeeded and hit a hologram
+            // hitInfo's point represents the position being gazed at
+            // hitInfo's collider GameObject represents the hologram being gazed at
+            // Requires Tooltip.prefab in Resources folder.
+            tooltip.transform.localPosition = origin + new Vector3(hitInfo.point.x, hitInfo.point.y, 0);
+            tooltip.transform.rotation = gameObject.transform.rotation;
+            var tooltipText = tooltip.transform.GetComponent<Text>();
+            tooltipText.text = hitInfo.point.ToString();
+        } else
+        {
+            var tooltipText = tooltip.transform.GetComponent<Text>();
+            tooltipText.text = "";
+        }
+
+        if (shouldRender)
+        {
+            shouldRender = false;
+            Debug.Log("I RENDER");
+        }
+    }
+
+    private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
+    {
+        System.Action keywordAction;
+        if (keywords.TryGetValue(args.text, out keywordAction))
+        {
+            keywordAction.Invoke();
+        }
+    }
+
+    private void renderGraph()
+    {
+        // initialize plot
+        whatToRender = "barplot"; //scatterplot
         if (whatToRender == "scatterplot")
         {
             Debug.Log("Getting Data From Azure");
@@ -600,7 +676,7 @@ public class Graph : MonoBehaviour {
             var x = new float[n * m];
             var y = new float[n * m];
             var z = new float[n * m];
-            
+
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < m; j++)
@@ -674,50 +750,16 @@ public class Graph : MonoBehaviour {
 
             var t = new float[data.GetLength(0)];
             var R = new float[data.GetLength(0), data.GetLength(1) - 1];
-            for(int i = 0; i < data.GetLength(0); i++)
+            for (int i = 0; i < data.GetLength(0); i++)
             {
-                t[i] = data[i,0];
-                for(int j = 1; j < data.GetLength(1); j++)
+                t[i] = data[i, 0];
+                for (int j = 1; j < data.GetLength(1); j++)
                 {
                     R[i, j - 1] = data[i, j];
                 }
             }
 
             RadarTube.Render(gameObject, t, R);
-        }
-    }
-	
-	// Update is called once per frame
-	void Update () {
-        updateTitlePivotAxis();
-
-        var origin = new Vector3(-0.5f, -0.5f, -5);
-        RaycastHit hitInfo;
-        if (Physics.Raycast(
-                Camera.main.transform.position,
-                Camera.main.transform.forward,
-                out hitInfo,
-                20.0f,
-                Physics.DefaultRaycastLayers))
-        {
-            // If the Raycast has succeeded and hit a hologram
-            // hitInfo's point represents the position being gazed at
-            // hitInfo's collider GameObject represents the hologram being gazed at
-            // Requires Tooltip.prefab in Resources folder.
-            tooltip.transform.localPosition = origin + new Vector3(hitInfo.point.x, hitInfo.point.y, 0);
-            tooltip.transform.rotation = gameObject.transform.rotation;
-            var tooltipText = tooltip.transform.GetComponent<Text>();
-            tooltipText.text = hitInfo.point.ToString();
-        } else
-        {
-            var tooltipText = tooltip.transform.GetComponent<Text>();
-            tooltipText.text = "";
-        }
-
-        if (shouldRender)
-        {
-            shouldRender = false;
-            Debug.Log("I RENDER");
         }
     }
 
