@@ -8,6 +8,7 @@ using ZXing;
 using ZXing.QrCode;
 using ZXing.Common;
 using UnityEngine.UI;
+using AzureUtil;
 //#endif
 
 
@@ -33,8 +34,18 @@ public class QRCodeManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+        //PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
         InitMarkers();
+    }
+
+    void StartReading()
+    {
+        PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+    }
+
+    void StopReading()
+    {
+        _photoCapture.StopPhotoModeAsync(OnStoppedPhotoMode);
     }
 
     private void InitMarkers()
@@ -56,7 +67,7 @@ public class QRCodeManager : MonoBehaviour {
         IEnumerable<Resolution> cameraResolutions = PhotoCapture.SupportedResolutions;
         //Resolution cameraResolution = cameraResolutions.ToArray()[15]; // 800x600 using the logicool webcam. Closest I could get to to HoloLens' 896x504 resolution
         var reso = PhotoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).ToArray();
-        Resolution cameraResolution = reso.Last(); //reso[8]; //.Last();
+        Resolution cameraResolution = reso[8]; //reso[8]; //reso.Last();
         Debug.Log(string.Format("Camera Resolution: {0}x{1}", cameraResolution.width, cameraResolution.height));
 
         // GameObject source = GameObject.Find("Display");
@@ -158,8 +169,37 @@ public class QRCodeManager : MonoBehaviour {
             Debug.Log(string.Format("QR Text: {0}", qrResult.Text));
             qrResultText = qrResult.Text;
 
+            var segments = qrResultText.Split('|');
             GameObject audio = GameObject.Find("Beep");
-            audio.GetComponent<AudioSource>().Play();
+            switch (segments[0])
+            {
+                case "auth":
+                    if(segments.Length != 3)
+                    {
+                        Debug.Log("ERROR: invalid auth QR Code expected 3 segments got: " + segments.Length);
+                        break;
+                    }
+                    AzureStorageConstants.Account = segments[1];
+                    AzureStorageConstants.KeyString = segments[2];
+                    Debug.Log("Set Auth correctly");
+                    audio.GetComponent<AudioSource>().Play();
+                    break;
+                case "graph":
+                    if (segments.Length != 4)
+                    {
+                        Debug.Log("ERROR: invalid auth QR Code expected 4 segments got: " + segments.Length);
+                        break;
+                    }
+                    var timestamp = segments[1];
+                    AzureStorageConstants.container = segments[2];
+                    var blob = segments[3];
+
+                    Debug.Log("rendering graph");
+                    audio.GetComponent<AudioSource>().Play();
+                    break;
+            }          
+
+
 
         }
         else

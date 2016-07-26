@@ -7,11 +7,11 @@ namespace AzureUtil
 {
     public static class AzureStorageConstants
     {
-        public static readonly string KeyString = "<>";
-        public static readonly string Account = "deftgeneralstorage";
-        public static readonly string BlobEndPoint = "http://deftgeneralstorage.blob.core.windows.net/";
-        public static readonly string SharedKeyAuthorizationScheme = "SharedKey";
-        public static readonly byte[] Key = Convert.FromBase64String(AzureStorageConstants.KeyString);
-        public static readonly string container = "holograph";
+        public static string KeyString = "<>";
+        public static string Account = "deftgeneralstorage";
+        //public static string BlobEndPoint = "http://deftgeneralstorage.blob.core.windows.net/";
+        public static string SharedKeyAuthorizationScheme = "SharedKey";
+        //public static byte[] Key = Convert.FromBase64String(AzureStorageConstants.KeyString);
+        public static string container = "holograph";
     }
 }

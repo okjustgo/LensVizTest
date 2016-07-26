@@ -372,7 +372,7 @@ namespace AzureUtil
             byte[] SignatureBytes = System.Text.Encoding.UTF8.GetBytes(MessageSignature);
             //System.Security.Cryptography.HMACSHA256 SHA256 = new System.Security.Cryptography.HMACSHA256(Convert.FromBase64String(StorageKey));
             //String AuthorizationHeader = "SharedKey " + StorageAccount + ":" + Convert.ToBase64String(SHA256.ComputeHash(SignatureBytes));
-            var hash = HmacSha256(AzureStorageConstants.Key, SignatureBytes);
+            var hash = HmacSha256(Convert.FromBase64String(AzureStorageConstants.KeyString), SignatureBytes);
             String AuthorizationHeader = "SharedKey " + StorageAccount + ":" + Convert.ToBase64String(hash);
             return AuthorizationHeader;
         }
