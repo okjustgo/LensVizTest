@@ -554,7 +554,6 @@ public class Graph : MonoBehaviour {
     private GameObject tooltipPrefab, tooltip;
     private KeywordRecognizer keywordRecognizer = null;
     private Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
-    private string whatToRender;
 
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
@@ -576,18 +575,10 @@ public class Graph : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
-        // initialize voice recognition
-        keywords.Add("Reset world", () =>
-        {
-            // Call the OnReset method on every descendant object.
-            this.BroadcastMessage("OnReset");
-        });
-
         keywords.Add("Show bar graph", () =>
         {
-            title.text = "Bar Graph";
-            whatToRender = "barplot";
-            renderGraph();  
+            this.title.text = "Bar Graph";
+            //this.renderGraph("barplot");
         });
 
         // Tell the KeywordRecognizer about our keywords.
@@ -597,7 +588,7 @@ public class Graph : MonoBehaviour {
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
 
-        renderGraph();
+        renderGraph("surface");
     }
 	
 	// Update is called once per frame
@@ -643,10 +634,9 @@ public class Graph : MonoBehaviour {
         }
     }
 
-    private void renderGraph()
+    private void renderGraph(string whatToRender)
     {
         // initialize plot
-        whatToRender = "barplot"; //scatterplot
         if (whatToRender == "scatterplot")
         {
             Debug.Log("Getting Data From Azure");
