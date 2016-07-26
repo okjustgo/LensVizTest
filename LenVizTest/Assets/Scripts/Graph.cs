@@ -549,6 +549,9 @@ public class Graph : MonoBehaviour {
     }
 
     private bool shouldRender = false;
+    private bool hadError = false;
+    private int errorCode = 0;
+    private string errorMsg = "";
     private float[,] data;
     private Text title;
     private GameObject tooltipPrefab, tooltip;
@@ -614,7 +617,8 @@ public class Graph : MonoBehaviour {
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
 
-        renderGraph();
+        Debug.Log("Getting Data From Azure");
+        GetDataFromAzure("holograph", "irisData2.hgd");
     }
 	
 	// Update is called once per frame
@@ -644,10 +648,26 @@ public class Graph : MonoBehaviour {
             tooltipText.text = "";
         }
 
+        if (hadError)
+        {
+
+            hadError = false;
+
+            var errorMsgPre = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
+            var errorMsgObj = Instantiate(errorMsgPre);
+            errorMsgObj.transform.parent = GameObject.Find("/Graph/Canvas").transform;
+
+            errorMsgObj.transform.localPosition = new Vector3(0f, -0f, -5f);
+            errorMsgObj.transform.rotation = this.gameObject.transform.rotation;
+            var errorMsgObjText = errorMsgObj.transform.GetComponent<Text>();
+            errorMsgObjText.text = errorMsg;
+        }
+
         if (shouldRender)
         {
             shouldRender = false;
             Debug.Log("I RENDER");
+            renderGraph();
         }
     }
 
@@ -663,15 +683,11 @@ public class Graph : MonoBehaviour {
     private void renderGraph()
     {
         // initialize plot
-        whatToRender = "barplot"; //scatterplot
+        whatToRender = "scatterplot"; //scatterplot
         if (whatToRender == "scatterplot")
         {
-            Debug.Log("Getting Data From Azure");
+
             title.text = "Scatter Plot";
-            GetDataFromAzure("holograph", "irisData2.hgd");
-
-            //GetDataFromAzure2("holograph", "testData.hgd");
-
             var x = new float[data.GetLength(0)];
             var y = new float[data.GetLength(0)];
             var z = new float[data.GetLength(0)];
@@ -816,34 +832,23 @@ public class Graph : MonoBehaviour {
 
     public void GetDataFromAzure(string containerName, string blobName)
     {
-        var blobHelper = new AzureHelper("deftgeneralstorage", "uv5+dFwxSWgyirOtIPCDeWbFeWwbFcjRkBA9/lYhUT90d6mlD6sCgv8BmCY0zJVkLZ1DqQ2P1aO+e8IVlMSsEg==");
-        var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
+        try
+        {
+            var blobHelper = new AzureHelper("deftgeneralstorage", "<>");
+            var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
 
-        var requestState = new RequestState();
-        requestState.request = request;
+            var requestState = new RequestState();
+            requestState.request = request;
 
-        IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
+            IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
+        }
+        catch (Exception e)
+        {
+            errorMsg = e.Message;
+            hadError = true;
+        }
 
-        WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
-    }
-
-    public void GetDataFromAzure2(string containerName, string blobName)
-    {
-        var blobHelper = new AzureHelper("deftgeneralstorage", "uv5+dFwxSWgyirOtIPCDeWbFeWwbFcjRkBA9/lYhUT90d6mlD6sCgv8BmCY0zJVkLZ1DqQ2P1aO+e8IVlMSsEg==");
-        var request = blobHelper.CreateGetBlobRequest(containerName, blobName);
-
-        var requestState = new RequestState();
-        requestState.request = request;
-
-        IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ResponseCallback), requestState);
-
-        //var response = request.GetResponse();
-        //Stream s = response.GetResponseStream();
-        //byte[] b = new byte[4];
-        //s.Read(b, 0, 4);
-        //int i = BitConverter.ToInt32(b, 0);
-        //Debug.Log(i);
-        WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
+        //WaitHandle.WaitAll(new[] { requestState.isThisDone }, 15 * 1000);
     }
 
     private void ResponseCallback(IAsyncResult result)
@@ -913,7 +918,9 @@ public class Graph : MonoBehaviour {
             Debug.Log("\nRespCallback Exception raised!");
             Debug.Log(string.Format("\nMessage:{0}", e.Message));
             Debug.Log(string.Format("\nStatus:{0}", e.Status));
-            throw;
+            errorMsg = e.Message;
+            hadError = true;
+            //throw;
         }
     }
 }
