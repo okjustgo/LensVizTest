@@ -27,22 +27,22 @@ public class VoiceManager : MonoBehaviour
 
         keywords.Add("Show bar graph", () =>
         {
-            this.createGraph("barplot");
+            this.createGraph("diamonds.hgd");
         });
 
         keywords.Add("Show scatter plot", () =>
         {
-            this.createGraph("scatterplot");
+            this.createGraph("iris.hgd");
         });
 
         keywords.Add("Show surface chart", () =>
         {
-            this.createGraph("surface");
+            this.createGraph("volcano.hgd");
         });
 
         keywords.Add("Show radar tube", () =>
         {
-            this.createGraph("radartube");
+            this.createGraph("mtcars.hgd");
         });
 
         // Tell the KeywordRecognizer about our keywords.
@@ -51,7 +51,6 @@ public class VoiceManager : MonoBehaviour
         // Register a callback for the KeywordRecognizer and start recognizing!
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
-
     }
 
     private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
@@ -63,12 +62,12 @@ public class VoiceManager : MonoBehaviour
         }
     }
 
-    private void createGraph(string graphType)
+    private void createGraph(string dataset)
     {
         var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
         var graph = Instantiate(graphPrefab);
         graph.SendMessage("OnSelect");
-        graph.GetComponent<Graph>().whatToRender = graphType;
+        graph.GetComponent<Graph>().datasetToRender = dataset;
         graph.transform.parent = gameObject.transform;
     }
 

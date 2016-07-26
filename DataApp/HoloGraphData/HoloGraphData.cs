@@ -16,6 +16,11 @@ namespace HoloGraph
     {
         object headersJson;
         object seriesJson;
+        int seriesIdx;
+        int xIdx;
+        int yIdx;
+        int zIdx;
+        string[] columnNames;
         float[][] data;
 
         public HoloGraphData()
@@ -66,7 +71,7 @@ namespace HoloGraph
             headersJson = Json.Serialize(json);
         }
 
-        public static string GetSeriesDictoinaryJson(List<string> seriesList)
+        public static string GetSeriesDictionaryJson(List<string> seriesList)
         {
             var seriesJson = string.Empty;
             for (int i = 0; i < seriesList.Count; i++)
@@ -159,6 +164,26 @@ namespace HoloGraph
             return Encoding.ASCII.GetString(jsonBytes);
         }
 
+        // Expects ReadDataFromCSV to be called already so column names and order already known
+        public void CreateAndSetHeader(string title, string geometry)
+        {
+            var xAxisName = columnNames[xIdx];
+            var yAxisName = columnNames[yIdx];
+            var zAxisName = columnNames[zIdx];
+            var seriesName = seriesIdx == -1 ? "" : columnNames[seriesIdx];
+            var headerStr = string.Format(@"{{
+                'title': '{0}'
+                'type': '{1}',
+                'xAxis': '{2}',
+                'yAxis': '{3}',
+                'zAxis': '{4}',
+                'seriesName': '{5}',
+                'hasSeries': {6}
+            }}", title, geometry, xAxisName, yAxisName, zAxisName, seriesName, seriesIdx == -1 ? "false" : "true");
+            headerStr = headerStr.Replace('\'', '\"');
+            HeadersJson = headerStr;
+        }
+
         public void ReadDataFromCSV(string fileName, string aesthetics)
         {
             List<float[]> dataList = new List<float[]>();
@@ -170,13 +195,18 @@ namespace HoloGraph
             var zStr = "z";
 
             var headers = reader.ReadLine().Trim().Split('\t');
+            columnNames = new string[headers.Length];
+            for(int i = 0; i < headers.Length; i++)
+            {
+                columnNames[i] = headers[i].Trim(new[] { '"' });
+            }
             var cols = headers.Length;
 
             var aes = aesthetics.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-            var seriesIdx = Array.FindIndex(aes, t => t.IndexOf(seriesStr, StringComparison.OrdinalIgnoreCase) >= 0);
-            var xIdx = Array.FindIndex(aes, t => t.IndexOf(xStr, StringComparison.OrdinalIgnoreCase) >= 0);
-            var yIdx = Array.FindIndex(aes, t => t.IndexOf(yStr, StringComparison.OrdinalIgnoreCase) >= 0);
-            var zIdx = Array.FindIndex(aes, t => t.IndexOf(zStr, StringComparison.OrdinalIgnoreCase) >= 0);
+            seriesIdx = Array.FindIndex(aes, t => t.IndexOf(seriesStr, StringComparison.OrdinalIgnoreCase) >= 0);
+            xIdx = Array.FindIndex(aes, t => t.IndexOf(xStr, StringComparison.OrdinalIgnoreCase) >= 0);
+            yIdx = Array.FindIndex(aes, t => t.IndexOf(yStr, StringComparison.OrdinalIgnoreCase) >= 0);
+            zIdx = Array.FindIndex(aes, t => t.IndexOf(zStr, StringComparison.OrdinalIgnoreCase) >= 0);
 
             var xyzIdx = new int[] { xIdx, yIdx, zIdx };
 
@@ -210,7 +240,7 @@ namespace HoloGraph
                 dataList.Add(dataRow);
             }
                         
-            this.SeriesJson = HoloGraphData.GetSeriesDictoinaryJson(seriesList); //TODO: Inefficent
+            this.SeriesJson = HoloGraphData.GetSeriesDictionaryJson(seriesList); //TODO: Inefficent
 
             data = dataList.ToArray();
 

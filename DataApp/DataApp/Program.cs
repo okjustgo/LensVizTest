@@ -22,7 +22,13 @@ namespace DataApp
             var ht = new HoloGraphTransfer(connection, "holograph");
             //ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\mtcars.tsv", "mtcars.hgd", "scatter", "x;y;z;series");
 
-            ht.UploadCsvAsHgd(@"irisData.tsv", "irisTest_test.hgd", "scatter", "x;series;z;y");
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\mtcars.tsv", "mtcars.hgd", "Motor Trend Car Road Tests", "scatter", "x;y;z;series");
+
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\diamonds.tsv", "diamonds.hgd", "Price of Diamonds By Quality", "bar", "x;y;z;series");
+
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\volcano.tsv", "volcano.hgd", "Maunga Whau Volcano", "surface", "x;y;z;series");
+
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\iris.tsv", "iris.hgd", "Comparison of Iris Species", "scatter", "x;y;z;series");
 
             //var headerStr = @"{
             //    'type': 'scatter',

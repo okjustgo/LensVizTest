@@ -69,7 +69,8 @@ public class Graph : MonoBehaviour {
         Y
     }
 
-    public string whatToRender;
+    public string datasetToRender;
+    private bool needToGetData = true;
     private bool shouldRender = false;
     private bool hadError = false;
     private int errorCode = 0;
@@ -77,6 +78,9 @@ public class Graph : MonoBehaviour {
     private float[,] data;
     private HoloGraphData hgd;
     private Text title;
+    private Text xAxis;
+    private Text yAxis;
+    private Text zAxis;
     private GameObject tooltipPrefab, tooltip, msgObj;
 
     // The axis about which the object will rotate.
@@ -88,6 +92,9 @@ public class Graph : MonoBehaviour {
     void Awake()
     {
         title = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
+        xAxis = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/XAxis").gameObject.GetComponent<Text>();
+        yAxis = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/YAxis").gameObject.GetComponent<Text>();
+        zAxis = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/ZAxis").gameObject.GetComponent<Text>();
 
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
         tooltip = Instantiate(tooltipPrefab);
@@ -118,14 +125,8 @@ public class Graph : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start () {
-
-        Debug.Log("Getting Data From Azure");
-        //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
-        this.SetMsgText("Loading...");
-        GetDataFromHgd(AzureStorageConstants.container, "irisTest.hgd");
-
-        renderGraph();
+    void Start ()
+    {
     }
 
     // Update is called once per frame
@@ -165,6 +166,14 @@ public class Graph : MonoBehaviour {
             
         }
 
+        if (needToGetData && !string.IsNullOrEmpty(datasetToRender))
+        {
+            Debug.Log("Getting Data From Azure");
+            //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
+            this.SetMsgText("Loading...");
+            GetDataFromHgd(AzureStorageConstants.container, datasetToRender);
+            needToGetData = false;
+        }
         if (shouldRender)
         {
             shouldRender = false;
@@ -175,63 +184,66 @@ public class Graph : MonoBehaviour {
 
     private void renderGraph()
     {
-        if (whatToRender == "") {
-            whatToRender = "scatterplot";
-        }
+        var geometry = hgd.GetGeom();
+
+        title.text = hgd.GetTitle();
+        xAxis.text = hgd.GetXAxisTitle();
+        yAxis.text = hgd.GetZAxisTitle();
+        zAxis.text = hgd.GetYAxisTitle();
+
         this.SetMsgText("Rendering...");
+
         // initialize plot
-        if (whatToRender == "scatterplot")
+        if (geometry == "scatter")
         {
-            title.text = "Scatter Plot";
             ScatterPlot.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ(), hgd.GetSeries());
         }
-        if (whatToRender == "barplot")
+        if (geometry == "bar")
         {
-            title.text = "Bar Graph";
-            int m = 50;
-            int n = 50;
-            var x = new float[n * m];
-            var y = new float[n * m];
-            var z = new float[n * m];
+            //int m = 50;
+            //int n = 50;
+            //var x = new float[n * m];
+            //var y = new float[n * m];
+            //var z = new float[n * m];
 
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < m; j++)
-                {
-                    x[i + n * j] = i;
-                    y[i + n * j] = j;
-                    var X = 7f * (float)((2.0 * i - n) / n);
-                    var Y = 7f * (float)((2.0 * j - m) / m);
-                    z[i + n * j] = 0.5f * (float)(Math.Sin(X + Y) + Math.Sin(X - Y));
-                }
-            }
+            //for (int i = 0; i < n; i++)
+            //{
+            //    for (int j = 0; j < m; j++)
+            //    {
+            //        x[i + n * j] = i;
+            //        y[i + n * j] = j;
+            //        var X = 7f * (float)((2.0 * i - n) / n);
+            //        var Y = 7f * (float)((2.0 * j - m) / m);
+            //        z[i + n * j] = 0.5f * (float)(Math.Sin(X + Y) + Math.Sin(X - Y));
+            //    }
+            //}
 
-            BarGraph.Render(gameObject, x, y, z);
+            BarGraph.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ());
         }
-        if (whatToRender == "surface")
+        if (geometry == "surface")
         {
-            title.text = "Surface Chart";
-            int m = 50;
-            int n = 50;
-            var x = new float[n * m];
-            var y = new float[n * m];
-            var z = new float[n * m];
+            //title.text = "Surface Chart";
+            //int m = 50;
+            //int n = 50;
+            //var x = new float[n * m];
+            //var y = new float[n * m];
+            //var z = new float[n * m];
 
-            for (int i = 0; i < n; i++)
-            {
-                for (int j = 0; j < m; j++)
-                {
-                    x[i + n * j] = i;
-                    y[i + n * j] = j;
-                    var X = 7f * (float)((2.0 * i - n) / n);
-                    var Y = 7f * (float)((2.0 * j - m) / m);
-                    z[i + n * j] = 0.5f * (float)(Math.Sin(X + Y) + Math.Sin(X - Y));
-                }
-            }
+            //for (int i = 0; i < n; i++)
+            //{
+            //    for (int j = 0; j < m; j++)
+            //    {
+            //        x[i + n * j] = i;
+            //        y[i + n * j] = j;
+            //        var X = 7f * (float)((2.0 * i - n) / n);
+            //        var Y = 7f * (float)((2.0 * j - m) / m);
+            //        z[i + n * j] = 0.5f * (float)(Math.Sin(X + Y) + Math.Sin(X - Y));
+            //    }
+            //}
 
-            SurfaceChart.Render(gameObject, x, y, z);
+            SurfaceChart.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ());
         }
-        if (whatToRender == "radartube")
+        if (geometry == "radartube")
         {
             title.text = "Radar Tube";
             // From Kaggle bikeshare competition.
@@ -377,11 +389,9 @@ public class Graph : MonoBehaviour {
 
             memStream.Seek(0, SeekOrigin.Begin);
 
-            hgd = new HoloGraphData(memStream);
-            data = hgd.Data.To2D();        
+            hgd = new HoloGraphData(memStream);       
 
             requestState.isThisDone.Set();
-
 
             this.shouldRender = true;
             Debug.Log("setting should render");
