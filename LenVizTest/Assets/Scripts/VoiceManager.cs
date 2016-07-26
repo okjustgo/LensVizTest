@@ -25,24 +25,29 @@ public class VoiceManager : MonoBehaviour
     void Start()
     {
 
-        keywords.Add("Show bar graph", () =>
+        keywords.Add("Create bar graph", () =>
         {
             this.createGraph("barplot");
         });
 
-        keywords.Add("Show scatter plot", () =>
+        keywords.Add("Create scatter plot", () =>
         {
             this.createGraph("scatterplot");
         });
 
-        keywords.Add("Show surface chart", () =>
+        keywords.Add("Create surface chart", () =>
         {
             this.createGraph("surface");
         });
 
-        keywords.Add("Show radar tube", () =>
+        keywords.Add("Create radar tube", () =>
         {
             this.createGraph("radartube");
+        });
+
+        keywords.Add("Remove", () =>
+        {
+            this.removeGraph();
         });
 
         // Tell the KeywordRecognizer about our keywords.
@@ -60,6 +65,20 @@ public class VoiceManager : MonoBehaviour
         if (keywords.TryGetValue(args.text, out keywordAction))
         {
             keywordAction.Invoke();
+        }
+    }
+
+    private void removeGraph()
+    {
+        RaycastHit hitInfo;
+        if (Physics.Raycast(
+                Camera.main.transform.position,
+                Camera.main.transform.forward,
+                out hitInfo,
+                20.0f,
+                Physics.DefaultRaycastLayers))
+        {
+            hitInfo.transform.SendMessage("Destroy");
         }
     }
 
