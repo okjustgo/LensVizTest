@@ -66,7 +66,7 @@ namespace HoloGraph
             headersJson = Json.Serialize(json);
         }
 
-        public static string GetSeriesDictoinaryJson(List<string> seriesList)
+        public static string GetSeriesDictionaryJson(List<string> seriesList)
         {
             var seriesJson = string.Empty;
             for (int i = 0; i < seriesList.Count; i++)
@@ -210,11 +210,50 @@ namespace HoloGraph
                 dataList.Add(dataRow);
             }
 
-            this.SeriesJson = HoloGraphData.GetSeriesDictoinaryJson(seriesList); //TODO: Inefficent
+            this.SeriesJson = HoloGraphData.GetSeriesDictionaryJson(seriesList); //TODO: Inefficent
 
             data = dataList.ToArray();
 
         }
 
+        public float[] GetX()
+        {
+            var x = new float[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                x[i] = data[i][1];
+            }
+            return x;
+        }
+
+        public float[] GetY()
+        {
+            var y = new float[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                y[i] = data[i][2];
+            }
+            return y;
+        }
+
+        public float[] GetZ()
+        {
+            var z = new float[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                z[i] = data[i][3];
+            }
+            return z;
+        }
+
+        public float[] GetSeries()
+        {
+            var s = new float[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                s[i] = data[i][0];
+            }
+            return s;
+        }
     }
 }

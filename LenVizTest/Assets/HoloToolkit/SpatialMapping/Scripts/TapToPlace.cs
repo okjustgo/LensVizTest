@@ -55,24 +55,42 @@ namespace HoloToolkit.Unity
                 var headPosition = Camera.main.transform.position;
                 var gazeDirection = Camera.main.transform.forward;
 
-                RaycastHit hitInfo;
-                if (Physics.Raycast(headPosition, gazeDirection, out hitInfo,
-                    30.0f, SpatialMappingManager.Instance.LayerMask))
-                {
-                    // Move this object to where the raycast
-                    // hit the Spatial Mapping mesh.
-                    // Here is where you might consider adding intelligence
-                    // to how the object is placed.  For example, consider
-                    // placing based on the bottom of the object's
-                    // collider so it sits properly on surfaces.
-                    this.transform.position = hitInfo.point;
+                // Snap it to your face
+                this.transform.position = headPosition + (gazeDirection*3);
+                //this.transform.localPosition += new Vector3(0f, 0.5f, -0.5f);
 
-                    // Rotate this object to face the user.
-                    Quaternion toQuat = Camera.main.transform.localRotation;
-                    toQuat.x = 0;
-                    toQuat.z = 0;
-                    this.transform.rotation = toQuat;
-                }
+                // TODO: Add collison with the floor or surfaces.
+
+                // Rotate this object to face the user.
+                Quaternion toQuat = Camera.main.transform.localRotation;
+                toQuat.x = 0;
+                toQuat.z = 0;
+                this.transform.rotation = toQuat;
+
+                //RaycastHit hitInfo;
+                //if (Physics.Raycast(headPosition, gazeDirection, out hitInfo,
+                //    7.0f, SpatialMappingManager.Instance.LayerMask))
+                //{
+                //    // Move this object to where the raycast
+                //    // hit the Spatial Mapping mesh.
+                //    // Here is where you might consider adding intelligence
+                //    // to how the object is placed.  For example, consider
+                //    // placing based on the bottom of the object's
+                //    // collider so it sits properly on surfaces.
+
+                //    var pos = hitInfo.point;
+                //    //pos.z = Mathf.Max(pos.z, 5);
+                //    this.transform.position = pos;
+
+                //    this.transform.localPosition += new Vector3(0f, 0.5f, -0.5f);
+
+
+                //    // Rotate this object to face the user.
+                //    Quaternion toQuat = Camera.main.transform.localRotation;
+                //    toQuat.x = 0;
+                //    toQuat.z = 0;
+                //    this.transform.rotation = toQuat;
+                //}
             }
         }
     }

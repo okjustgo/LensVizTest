@@ -215,20 +215,8 @@ public class Graph : MonoBehaviour {
         // initialize plot
         if (whatToRender == "scatterplot")
         {
-
             title.text = "Scatter Plot";
-            var x = new float[data.GetLength(0)];
-            var y = new float[data.GetLength(0)];
-            var z = new float[data.GetLength(0)];
-            var series = new float[data.GetLength(0)];
-            for (int i = 0; i < data.GetLength(0); i++)
-            {
-                x[i] = data[i, 1];
-                y[i] = data[i, 2];
-                z[i] = data[i, 3];
-                series[i] = data[i, 0];
-            }
-            ScatterPlot.Render(gameObject, x, y, z, series);
+            ScatterPlot.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ(), hgd.GetSeries());
         }
         if (whatToRender == "barplot")
         {
