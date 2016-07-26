@@ -87,7 +87,6 @@ public class Graph : MonoBehaviour {
 
     void Awake()
     {
-        //title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
         title = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
 
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
@@ -126,7 +125,6 @@ public class Graph : MonoBehaviour {
         this.SetMsgText("Loading...");
         GetDataFromHgd(AzureStorageConstants.container, "irisTest.hgd");
 
-        //renderGraph("barplot"); //scatterplot barplot surface radartube
         renderGraph();
     }
 
