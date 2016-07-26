@@ -7,9 +7,8 @@ using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Threading;
-using UnityEngine.UI;
-using UnityEngine.Windows.Speech;
 using System.Linq;
+using UnityEngine.UI;
 using AzureUtil;
 using HoloGraph;
 
@@ -70,6 +69,7 @@ public class Graph : MonoBehaviour {
         Y
     }
 
+    public string whatToRender;
     private bool shouldRender = false;
     private bool hadError = false;
     private int errorCode = 0;
@@ -78,8 +78,6 @@ public class Graph : MonoBehaviour {
     private HoloGraphData hgd;
     private Text title;
     private GameObject tooltipPrefab, tooltip, msgObj;
-    private KeywordRecognizer keywordRecognizer = null;
-    private Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
 
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
@@ -89,7 +87,8 @@ public class Graph : MonoBehaviour {
 
     void Awake()
     {
-        title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
+        //title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
+        title = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
 
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
         tooltip = Instantiate(tooltipPrefab);
@@ -122,39 +121,13 @@ public class Graph : MonoBehaviour {
     // Use this for initialization
     void Start () {
 
-        keywords.Add("Show bar graph", () =>
-        {
-            this.renderGraph("barplot");
-        });
-
-        keywords.Add("Show scatter plot", () =>
-        {
-            this.renderGraph("scatterplot");
-        });
-
-        keywords.Add("Show surface chart", () =>
-        {
-            this.renderGraph("surface");
-        });
-
-        keywords.Add("Show radar tube", () =>
-        {
-            this.renderGraph("radartube");
-        });
-
-        // Tell the KeywordRecognizer about our keywords.
-        keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
-
-        // Register a callback for the KeywordRecognizer and start recognizing!
-        keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
-        keywordRecognizer.Start();
-
         Debug.Log("Getting Data From Azure");
         //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
         this.SetMsgText("Loading...");
-        GetDataFromHgd(AzureStorageConstants.container, "irisTest.hgd");        
+        GetDataFromHgd(AzureStorageConstants.container, "irisTest.hgd");
 
         //renderGraph("barplot"); //scatterplot barplot surface radartube
+        renderGraph();
     }
 
     // Update is called once per frame
@@ -196,21 +169,15 @@ public class Graph : MonoBehaviour {
         {
             shouldRender = false;
             this.ClearMsgText();
-            renderGraph("scatterplot");
+            renderGraph();
         }
     }
 
-    private void KeywordRecognizer_OnPhraseRecognized(PhraseRecognizedEventArgs args)
+    private void renderGraph()
     {
-        System.Action keywordAction;
-        if (keywords.TryGetValue(args.text, out keywordAction))
-        {
-            keywordAction.Invoke();
+        if (whatToRender == "") {
+            whatToRender = "scatterplot";
         }
-    }
-
-    private void renderGraph(string whatToRender)
-    {
         this.SetMsgText("Rendering...");
         // initialize plot
         if (whatToRender == "scatterplot")

@@ -17,7 +17,7 @@ namespace HoloToolkit.Unity
 
     public partial class TapToPlace : MonoBehaviour
     {
-        bool placing = false;
+        public bool placing = false;
 
         // Called by GazeGestureManager when the user performs a tap gesture.
         void OnSelect()
