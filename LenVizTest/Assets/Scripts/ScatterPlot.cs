@@ -78,7 +78,7 @@ public class ScatterPlot : MonoBehaviour
             // Flip Z and Y so Z values scale vertically.
             points[i].position = new Vector3(xVal, zVal, yVal);
             points[i].startColor = availableColors[(int)series[i] % availableColors.Length];
-            points[i].startSize = 0.05f;
+            points[i].startSize = 0.03f;
         }
 
         particles.SetParticles(points, numPoints);
