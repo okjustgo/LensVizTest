@@ -148,8 +148,17 @@ public class VoiceManager : MonoBehaviour
         }
         var messageText = message.transform.GetComponent<Text>();
         messageText.text = text;
-        message.transform.position = new Vector3(0, 0, 1f);
+        //message.transform.position = new Vector3(0, 0, 1f);
         messageText.enabled = true;
+
+        var headPosition = Camera.main.transform.position;
+        var gazeDirection = Camera.main.transform.forward;
+        message.transform.position = headPosition + (gazeDirection * 3);
+
+        Quaternion toQuat = Camera.main.transform.localRotation;
+        toQuat.x = 0;
+        toQuat.z = 0;
+        message.transform.rotation = toQuat;
     }
 
     private void hideOptions()
@@ -161,7 +170,17 @@ public class VoiceManager : MonoBehaviour
 
     void Update()
     {
+        if (message.transform.GetComponent<Text>().enabled)
+        {
+            var headPosition = Camera.main.transform.position;
+            var gazeDirection = Camera.main.transform.forward;
+            message.transform.position = headPosition + (gazeDirection * 3);
 
+            Quaternion toQuat = Camera.main.transform.localRotation;
+            toQuat.x = 0;
+            toQuat.z = 0;
+            message.transform.rotation = toQuat;
+        }
     }
 
     void OnDestroy()
