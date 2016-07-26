@@ -122,11 +122,13 @@ public class VoiceManager : MonoBehaviour
     private void startQR()
     {
         this.hideOptions();
+        GameObject.Find("Managers").GetComponent<QRCodeManager>().SendMessage("StartReading");
     }
 
     private void stopQR()
     {
         this.hideOptions();
+        GameObject.Find("Managers").GetComponent<QRCodeManager>().SendMessage("StopReading");
     }
 
     private void showOptions()
