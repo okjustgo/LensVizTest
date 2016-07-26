@@ -126,26 +126,24 @@ namespace HoloGraph
             return Encoding.ASCII.GetString(jsonBytes);
         }
 
-        public void ReadDataFromCSV(string fileName)
+        public void ReadDataFromCSV(string fileName, string aesthetics)
         {
             List<float[]> dataList = new List<float[]>();
-            //var contents = File.ReadAllText(fileName).Split('\n');
             var reader = new StreamReader(File.OpenRead(fileName));            
 
             var seriesStr = "series";
             var xStr = "x";
-            var yStr = "y";
+            var yStr = "y"; 
             var zStr = "z";
            
-            var headers = reader.ReadLine().Trim().Split(',');
-            var types = reader.ReadLine().Trim().Split(',');
-            if (headers.Length != types.Length) { throw new ApplicationException($"Invalid csv {fileName}. Saw {headers.Length} headers and {types.Length} types"); }
+            var headers = reader.ReadLine().Trim().Split('\t');
             var cols = headers.Length;
 
-            var seriesIdx = Array.FindIndex(types, t => t.IndexOf(seriesStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
-            var xIdx = Array.FindIndex(types, t => t.IndexOf(xStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
-            var yIdx = Array.FindIndex(types, t => t.IndexOf(yStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
-            var zIdx = Array.FindIndex(types, t => t.IndexOf(zStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            var aes = aesthetics.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+            var seriesIdx = Array.FindIndex(aes, t => t.IndexOf(seriesStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            var xIdx = Array.FindIndex(aes, t => t.IndexOf(xStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            var yIdx = Array.FindIndex(aes, t => t.IndexOf(yStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
+            var zIdx = Array.FindIndex(aes, t => t.IndexOf(zStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
 
             var xyzIdx = new int[] { xIdx, yIdx, zIdx };
 
@@ -156,7 +154,7 @@ namespace HoloGraph
             List<string> seriesList = new List<string>();
             while (!reader.EndOfStream)
             {
-                var row = reader.ReadLine().Trim().Split(',');
+                var row = reader.ReadLine().Trim().Split('\t');
                 var dataRow = new float[cols];
                 var dataIdx = 0;
 
