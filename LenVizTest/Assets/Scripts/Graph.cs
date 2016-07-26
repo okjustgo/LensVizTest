@@ -566,7 +566,7 @@ public class Graph : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        var whatToRender = "scatterplot"; //scatterplot
+        var whatToRender = "surface"; //scatterplot
         if (whatToRender == "scatterplot")
         {
             Debug.Log("Getting Data From Azure");

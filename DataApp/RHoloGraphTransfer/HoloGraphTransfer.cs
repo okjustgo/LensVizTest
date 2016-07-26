@@ -17,16 +17,16 @@ namespace RHoloGraphTransfer
             _azureConnection = new AzureDataSync(connectionString, containerName);
         }
 
-        public void UploadCsvAsHgd(string csvPath, string hgdFilename)
+        public void UploadCsvAsHgd(string csvPath, string hgdFilename, string geom, string aes)
         {
             var hgd = new HoloGraphData();
 
-            hgd.ReadDataFromCSV(csvPath);
+            hgd.ReadDataFromCSV(csvPath, aes);
 
-            var headerStr = @"{
-                'type': 'scatter',
+            var headerStr = string.Format(@"{{
+                'type': '{0}',
                 'hasSeries': true,
-            }";
+            }}", geom);
             hgd.SetHeader(headerStr);
 
             Stream dataStream = new MemoryStream();

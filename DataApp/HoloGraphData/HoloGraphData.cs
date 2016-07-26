@@ -139,8 +139,7 @@ namespace HoloGraph
             var headers = reader.ReadLine().Trim().Split('\t');
             var cols = headers.Length;
 
-            var aes = aesthetics.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
+            var aes = aesthetics.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
             var seriesIdx = Array.FindIndex(aes, t => t.IndexOf(seriesStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
             var xIdx = Array.FindIndex(aes, t => t.IndexOf(xStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
             var yIdx = Array.FindIndex(aes, t => t.IndexOf(yStr, StringComparison.InvariantCultureIgnoreCase) >= 0);
@@ -155,7 +154,7 @@ namespace HoloGraph
             List<string> seriesList = new List<string>();
             while (!reader.EndOfStream)
             {
-                var row = reader.ReadLine().Trim().Split(',');
+                var row = reader.ReadLine().Trim().Split('\t');
                 var dataRow = new float[cols];
                 var dataIdx = 0;
 
