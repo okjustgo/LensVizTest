@@ -25,9 +25,10 @@ namespace RHoloGraphTransfer
 
             var headerStr = string.Format(@"{{
                 'type': '{0}',
-                'hasSeries': true,
+                'hasSeries': true
             }}", geom);
-            hgd.SetHeader(headerStr);
+            headerStr = headerStr.Replace('\'','\"');
+            hgd.HeadersJson = headerStr;
 
             Stream dataStream = new MemoryStream();
             hgd.ToStream(ref dataStream);

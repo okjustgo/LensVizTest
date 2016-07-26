@@ -209,7 +209,7 @@ namespace HoloGraph
                 }
                 dataList.Add(dataRow);
             }
-                        
+
             this.SeriesJson = HoloGraphData.GetSeriesDictoinaryJson(seriesList); //TODO: Inefficent
 
             data = dataList.ToArray();

@@ -7,6 +7,7 @@ using AzureLib;
 using System.IO;
 using HoloGraph;
 using RHoloGraphTransfer;
+using System.Configuration;
 
 namespace DataApp
 {
@@ -14,13 +15,15 @@ namespace DataApp
     {
         static void Main(string[] args)
         {
-            //var azure = new AzureDataSync("holograph");
+            var azure = new AzureDataSync("holograph");
 
-            //var hgd = new HoloGraphData();
+            //var hgd = new HoloGraphData();        
+            var connection = ConfigurationManager.AppSettings["StorageConnectionString"];
+            var ht = new HoloGraphTransfer(connection, "holograph");
+            //ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\mtcars.tsv", "mtcars.hgd", "scatter", "x;y;z;series");
 
-            var ht = new HoloGraphTransfer("DefaultEndpointsProtocol=http;AccountName=deftgeneralstorage;AccountKey=Wouldn'tYouLikeToKnow", "holograph");
-            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\mtcars.tsv", "mtcars.hgd", "scatter", "x;y;z;series");
-                        
+            ht.UploadCsvAsHgd(@"irisData.tsv", "irisTest_test.hgd", "scatter", "x;series;z;y");
+
             //var headerStr = @"{
             //    'type': 'scatter',
             //    'hasSeries': true,
@@ -36,11 +39,11 @@ namespace DataApp
 
             //azure.Upload("testData.hgd", dataStream);
 
-            //Stream outStream = new MemoryStream();
-            //azure.Download("testData.hgd", ref outStream);
-            //outStream.Seek(0, SeekOrigin.Begin);
-            //var hgd2 = new HoloGraphData(outStream);
-
+            Stream outStream = new MemoryStream();
+            azure.Download("irisTest_test.hgd", ref outStream);
+            outStream.Seek(0, SeekOrigin.Begin);
+            var hgd2 = new HoloGraphData(outStream);
+            Console.WriteLine(hgd2.HeadersJson);
         }
     }
 }
