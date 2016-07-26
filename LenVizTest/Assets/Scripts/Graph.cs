@@ -91,10 +91,12 @@ public class Graph : MonoBehaviour {
 
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
         tooltip = Instantiate(tooltipPrefab);
-        tooltip.transform.parent = GameObject.Find("/Graph/Canvas").transform;
+        //tooltip.transform.parent = GameObject.Find("/Graph/Canvas").transform;
+        tooltip.transform.parent = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas");
 
         msgObj = Instantiate(Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject);
-        msgObj.transform.parent = GameObject.Find("/Graph/Canvas").transform;
+        //msgObj.transform.parent = GameObject.Find("/Graph/Canvas").transform;
+        tooltip.transform.parent = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas");
         msgObj.transform.localPosition = new Vector3(0f, -0f, -5f);
         msgObj.transform.rotation = this.gameObject.transform.rotation;
         msgObj.GetComponent<Text>().enabled = false;
