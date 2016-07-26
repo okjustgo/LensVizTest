@@ -77,19 +77,7 @@ public class ScatterPlot : MonoBehaviour
             float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin);
             // Flip Z and Y so Z values scale vertically.
             points[i].position = new Vector3(xVal, zVal, yVal);
-            if (series[i] == 1)
-            {
-                points[i].startColor = new Color(255, 0, 0);
-            }
-            if (series[i] == 2)
-            {
-                points[i].startColor = new Color(0, 255, 0);
-            }
-            if (series[i] == 3)
-            {
-                points[i].startColor = new Color(0, 0, 255);
-            }
-
+            points[i].startColor = availableColors[(int)series[i] % availableColors.Length];
             points[i].startSize = 0.05f;
         }
 
