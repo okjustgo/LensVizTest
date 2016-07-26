@@ -65,6 +65,13 @@
       <Project>{7e203724-e5ab-4f79-a297-c0e4dc474a26}</Project>
       <Name>HoloGraphData</Name>
     </ProjectReference>
+    <ProjectReference Include="..\RHoloGraphTransfer\RHoloGraphTransfer.csproj">
+      <Project>{04a8342e-24c9-46a8-b7e4-a0b25f738138}</Project>
+      <Name>RHoloGraphTransfer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

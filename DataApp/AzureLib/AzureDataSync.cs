@@ -12,7 +12,19 @@ namespace AzureLib
 {
     public class AzureDataSync
     {
-        private CloudBlobContainer container; 
+        private CloudBlobContainer container;
+        public AzureDataSync(string connectionString, string containerName)
+        {
+            // Retrieve storage account from connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse(connectionString);
+
+            // Create the blob client.
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            // Retrieve reference to a previously created container.
+            container = blobClient.GetContainerReference(containerName);
+        }
+
         public AzureDataSync(string containerName)
         {
             // Retrieve storage account from connection string.
