@@ -119,16 +119,28 @@ public class Graph : MonoBehaviour {
         msgObj.GetComponent<Text>().enabled = false;
     }
 
-
     // Use this for initialization
     void Start () {
 
         keywords.Add("Show bar graph", () =>
         {
-            this.title.text = "Bar Graph";
-            //this.renderGraph("barplot");
+            this.renderGraph("barplot");
         });
-       
+
+        keywords.Add("Show scatter plot", () =>
+        {
+            this.renderGraph("scatterplot");
+        });
+
+        keywords.Add("Show surface chart", () =>
+        {
+            this.renderGraph("surface");
+        });
+
+        keywords.Add("Show radar tube", () =>
+        {
+            this.renderGraph("radartube");
+        });
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
@@ -199,6 +211,7 @@ public class Graph : MonoBehaviour {
 
     private void renderGraph(string whatToRender)
     {
+        this.SetMsgText("Rendering...");
         // initialize plot
         if (whatToRender == "scatterplot")
         {
@@ -298,6 +311,7 @@ public class Graph : MonoBehaviour {
 
             RadarTube.Render(gameObject, t, R);
         }
+        this.ClearMsgText();
     }
 
     // Keeps the title facing the camera.
