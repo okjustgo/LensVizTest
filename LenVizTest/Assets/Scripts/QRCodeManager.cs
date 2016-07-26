@@ -56,7 +56,7 @@ public class QRCodeManager : MonoBehaviour {
         IEnumerable<Resolution> cameraResolutions = PhotoCapture.SupportedResolutions;
         //Resolution cameraResolution = cameraResolutions.ToArray()[15]; // 800x600 using the logicool webcam. Closest I could get to to HoloLens' 896x504 resolution
         var reso = PhotoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).ToArray();
-        Resolution cameraResolution = reso[8]; //.Last();
+        Resolution cameraResolution = reso.Last(); //reso[8]; //.Last();
         Debug.Log(string.Format("Camera Resolution: {0}x{1}", cameraResolution.width, cameraResolution.height));
 
         // GameObject source = GameObject.Find("Display");
