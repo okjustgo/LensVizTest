@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Windows.Speech;
+using UnityEngine.UI;
 
 /// <summary>
 /// KeywordManager allows you to specify keywords and methods in the Unity
@@ -24,6 +25,11 @@ public class VoiceManager : MonoBehaviour
 
     void Start()
     {
+
+        keywords.Add("Hey holograph", () =>
+        {
+            this.showOptions();
+        });
 
         keywords.Add("Create bar graph", () =>
         {
@@ -49,6 +55,18 @@ public class VoiceManager : MonoBehaviour
         {
             this.removeGraph();
         });
+
+        keywords.Add("Start QR", () =>
+        {
+            this.startQR();
+        });
+
+        keywords.Add("Stop QR", () =>
+        {
+            this.stopQR();
+        });
+
+        this.showOptions();
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
@@ -81,7 +99,7 @@ public class VoiceManager : MonoBehaviour
         }
     }
 
-    private void createGraph(string graphType)
+    private void createGraph(string dataset)
     {
         var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
         var graph = Instantiate(graphPrefab);
@@ -90,6 +108,39 @@ public class VoiceManager : MonoBehaviour
         graph.transform.parent = gameObject.transform;
     }
 
+    private void startQR()
+    {
+
+    }
+
+    private void stopQR()
+    {
+
+    }
+
+    private void showOptions()
+    {
+        var text = "Hello! You can say: \n\n";
+        var options = keywords.Keys.ToArray();
+        foreach (var option in options)
+        {
+            if (!option.Equals(options.First())) {
+                text += option;
+                if (!option.Equals(options.Last()))
+                {
+                    text += '\n';
+                }
+            }
+            
+        }
+        var tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
+        var tooltip = Instantiate(tooltipPrefab);
+        tooltip.transform.parent = GameObject.Find("Canvas").transform;
+        var tooltipText = tooltip.transform.GetComponent<Text>();
+        tooltipText.text = text;
+        tooltip.transform.position = new Vector3(0, 0, 0.5f);
+        tooltipText.enabled = true;
+    }
     void Update()
     {
 

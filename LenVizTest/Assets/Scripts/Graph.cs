@@ -189,7 +189,7 @@ public class Graph : MonoBehaviour {
         {
             Debug.Log("Getting Data From Azure");
             //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
-            this.SetMsgText("Loading...");
+            this.SetMsgText("Loading...", true);
             GetDataFromHgd(AzureStorageConstants.container, datasetToRender);
             needToGetData = false;
         }
@@ -210,7 +210,7 @@ public class Graph : MonoBehaviour {
         yAxis.text = hgd.GetZAxisTitle();
         zAxis.text = hgd.GetYAxisTitle();
 
-        this.SetMsgText("Rendering...");
+        this.SetMsgText("Rendering...", true);
 
         // initialize plot
         if (geometry == "scatter")
