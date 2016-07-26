@@ -22,11 +22,15 @@ public class VoiceManager : MonoBehaviour
 {
     private KeywordRecognizer keywordRecognizer = null;
     private Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
+    private GameObject messagePrefab, message;
 
     void Start()
     {
+        messagePrefab = Resources.Load(@"Message", typeof(GameObject)) as GameObject;
+        message = Instantiate(messagePrefab);
+        message.transform.parent = GameObject.Find("Canvas").transform;
 
-        keywords.Add("Hey holograph", () =>
+        keywords.Add("Show options", () =>
         {
             this.showOptions();
         });
@@ -51,7 +55,7 @@ public class VoiceManager : MonoBehaviour
             this.createGraph("mtcars.hgd");
         });
 
-        keywords.Add("Remove", () =>
+        keywords.Add("Remove graph", () =>
         {
             this.removeGraph();
         });
@@ -64,6 +68,11 @@ public class VoiceManager : MonoBehaviour
         keywords.Add("Stop QR", () =>
         {
             this.stopQR();
+        });
+
+        keywords.Add("Hide options", () =>
+        {
+            this.hideOptions();
         });
 
         this.showOptions();
@@ -87,6 +96,7 @@ public class VoiceManager : MonoBehaviour
 
     private void removeGraph()
     {
+        this.hideOptions();
         RaycastHit hitInfo;
         if (Physics.Raycast(
                 Camera.main.transform.position,
@@ -101,6 +111,7 @@ public class VoiceManager : MonoBehaviour
 
     private void createGraph(string dataset)
     {
+        this.hideOptions();
         var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
         var graph = Instantiate(graphPrefab);
         graph.SendMessage("OnSelect");
@@ -110,12 +121,14 @@ public class VoiceManager : MonoBehaviour
 
     private void startQR()
     {
-
+        this.hideOptions();
+        GameObject.Find("Managers").GetComponent<QRCodeManager>().SendMessage("StartReading");
     }
 
     private void stopQR()
     {
-
+        this.hideOptions();
+        GameObject.Find("Managers").GetComponent<QRCodeManager>().SendMessage("StopReading");
     }
 
     private void showOptions()
@@ -133,14 +146,19 @@ public class VoiceManager : MonoBehaviour
             }
             
         }
-        var tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
-        var tooltip = Instantiate(tooltipPrefab);
-        tooltip.transform.parent = GameObject.Find("Canvas").transform;
-        var tooltipText = tooltip.transform.GetComponent<Text>();
-        tooltipText.text = text;
-        tooltip.transform.position = new Vector3(0, 0, 0.5f);
-        tooltipText.enabled = true;
+        var messageText = message.transform.GetComponent<Text>();
+        messageText.text = text;
+        message.transform.position = new Vector3(0, 0, 1f);
+        messageText.enabled = true;
     }
+
+    private void hideOptions()
+    {
+        var messageText = message.transform.GetComponent<Text>();
+        messageText.text = "";
+        messageText.enabled = false;
+    }
+
     void Update()
     {
 
