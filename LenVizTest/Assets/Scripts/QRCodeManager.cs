@@ -55,7 +55,8 @@ public class QRCodeManager : MonoBehaviour {
 
         IEnumerable<Resolution> cameraResolutions = PhotoCapture.SupportedResolutions;
         //Resolution cameraResolution = cameraResolutions.ToArray()[15]; // 800x600 using the logicool webcam. Closest I could get to to HoloLens' 896x504 resolution
-        Resolution cameraResolution = PhotoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).Last();
+        var reso = PhotoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).ToArray();
+        Resolution cameraResolution = reso.Last(); //reso[8]; //.Last();
         Debug.Log(string.Format("Camera Resolution: {0}x{1}", cameraResolution.width, cameraResolution.height));
 
         // GameObject source = GameObject.Find("Display");
@@ -99,58 +100,67 @@ public class QRCodeManager : MonoBehaviour {
 //#if NETFX_CORE
         RGBLuminanceSource source = new RGBLuminanceSource(_sourceTexture.GetRawTextureData(), _sourceTexture.width, _sourceTexture.height);
         BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-        ZXing.QrCode.QRCodeReader qrCodeReader = new ZXing.QrCode.QRCodeReader();
-        Debug.Log(qrCodeReader);
-        qrResult = qrCodeReader.decode(bitmap);        
+        ZXing.QrCode.QRCodeReader qrCodeReader = new ZXing.QrCode.QRCodeReader();       
+        qrResult = qrCodeReader.decode(bitmap);
+
+
 
         if (qrResult != null)
         {
 
-            GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>().text = qrResult.Text;
+            //GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>().text = qrResult.Text;
 
-            Vector2[] resultPoints = new Vector2[qrResult.ResultPoints.Length];
-            for (int i = 0; i < resultPoints.Length; i++)
+            #region marker code
+            if (false)
             {
-                resultPoints[i] = new Vector2(qrResult.ResultPoints[i].X, qrResult.ResultPoints[i].Y);
-                _markers[i].transform.position = MarkerPosition(resultPoints[i]);
-                //_markers[i].GetComponent<Renderer>().enabled = true;
+                Vector2[] resultPoints = new Vector2[qrResult.ResultPoints.Length];
+                for (int i = 0; i < resultPoints.Length; i++)
+                {
+                    resultPoints[i] = new Vector2(qrResult.ResultPoints[i].X, qrResult.ResultPoints[i].Y);
+                    _markers[i].transform.position = MarkerPosition(resultPoints[i]);
+                    //_markers[i].GetComponent<Renderer>().enabled = true;
+                }
+
+                // Average the 2 diagonal points to get an estimate of the QR code center
+                Vector2 qrCenter = (resultPoints[0] + resultPoints[2]) / 2.0f;
+                _markers[3].transform.position = MarkerPosition(qrCenter);
+                //_markers[3].GetComponent<Renderer>().enabled = true;
+
+                Matrix4x4 cameraToWorldMatrix;
+                Matrix4x4 projectionMatrix;
+                if (!photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix))
+                {
+                    cameraToWorldMatrix = Camera.main.cameraToWorldMatrix;
+                    Debug.Log("Failed to get view matrix from photo");
+                }
+
+                if (!photoCaptureFrame.TryGetProjectionMatrix(out projectionMatrix))
+                {
+                    projectionMatrix = Camera.main.projectionMatrix;
+                    Debug.Log("Failed to get view matrix from photo");
+                }
+
+                Vector3 normalizedPos = Normalize(qrCenter);
+                Vector3 cameraSpacePos = UnProjectVector(projectionMatrix, normalizedPos);
+
+                Vector3 origin = cameraToWorldMatrix * new Vector4(0, 0, 0, 1);
+                Vector3 worldPos;
+                _debugRay = ImageToWorld(photoCaptureFrame, qrCenter, out worldPos);
+                QRPosotion = worldPos;
+
+                float qrProportion = Vector2.Distance(resultPoints[0], resultPoints[1]) / _sourceTexture.height;
+                float halfHeight = (cornerDistance / qrProportion) / 2.0f;
+                float halfFOV = verticalFOV / 2.0f;
+                _distance = halfHeight / Mathf.Tan(halfFOV * Mathf.Deg2Rad);
             }
+            #endregion
 
-            // Average the 2 diagonal points to get an estimate of the QR code center
-            Vector2 qrCenter = (resultPoints[0] + resultPoints[2]) / 2.0f;
-            _markers[3].transform.position = MarkerPosition(qrCenter);
-            //_markers[3].GetComponent<Renderer>().enabled = true;
-
-            Matrix4x4 cameraToWorldMatrix;
-            Matrix4x4 projectionMatrix;
-            if (!photoCaptureFrame.TryGetCameraToWorldMatrix(out cameraToWorldMatrix))
-            {
-                cameraToWorldMatrix = Camera.main.cameraToWorldMatrix;
-                Debug.Log("Failed to get view matrix from photo");
-            }
-
-            if (!photoCaptureFrame.TryGetProjectionMatrix(out projectionMatrix))
-            {
-                projectionMatrix = Camera.main.projectionMatrix;
-                Debug.Log("Failed to get view matrix from photo");
-            }
-
-            Vector3 normalizedPos = Normalize(qrCenter);
-            Vector3 cameraSpacePos = UnProjectVector(projectionMatrix, normalizedPos);
-
-            Vector3 origin = cameraToWorldMatrix * new Vector4(0, 0, 0, 1);
-            Vector3 worldPos;
-            _debugRay = ImageToWorld(photoCaptureFrame, qrCenter, out worldPos);
-            QRPosotion = worldPos;
-
-            float qrProportion = Vector2.Distance(resultPoints[0], resultPoints[1]) / _sourceTexture.height;
-            float halfHeight = (cornerDistance / qrProportion) / 2.0f;
-            float halfFOV = verticalFOV / 2.0f;
-            _distance = halfHeight / Mathf.Tan(halfFOV * Mathf.Deg2Rad);
             Debug.Log(string.Format("QR Text: {0}", qrResult.Text));
             qrResultText = qrResult.Text;
+
             GameObject audio = GameObject.Find("Beep");
             audio.GetComponent<AudioSource>().Play();
+
         }
         else
         {
@@ -159,7 +169,7 @@ public class QRCodeManager : MonoBehaviour {
                 _markers[i].GetComponent<Renderer>().enabled = false;
             }
 
-            Debug.Log("No QR code found");
+            //Debug.Log("No QR code found");
         }
 //#endif
     }
