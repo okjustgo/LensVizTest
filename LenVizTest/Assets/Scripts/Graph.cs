@@ -149,10 +149,12 @@ public class Graph : MonoBehaviour {
             tooltip.transform.rotation = gameObject.transform.rotation;
             var tooltipText = tooltip.transform.GetComponent<Text>();
             tooltipText.text = hitInfo.point.ToString();
+            tooltipText.enabled = true;
         } else
         {
             var tooltipText = tooltip.transform.GetComponent<Text>();
             tooltipText.text = "";
+            tooltipText.enabled = false;
         }
 
         if (hadError)
