@@ -591,9 +591,10 @@ public class Graph : MonoBehaviour {
         keywordRecognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;
         keywordRecognizer.Start();
 
-        renderGraph("surface");
         Debug.Log("Getting Data From Azure");
         GetDataFromAzure("holograph", "irisData2.hgd");
+
+        renderGraph("surface");
     }
 	
 	// Update is called once per frame
