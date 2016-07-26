@@ -12,6 +12,8 @@ using UnityEngine.UI;
 using AzureUtil;
 using HoloGraph;
 
+using HoloToolkit.Unity;
+
 internal static class ExtensionMethods
 {
     internal static T[][] ToJaggedArray<T>(this T[,] twoDimensionalArray)
@@ -89,6 +91,11 @@ public class Graph : MonoBehaviour {
     // Overrides the cached value of the title's default rotation.
     public Quaternion titleDefaultRotation { get; private set; }
 
+    void Destroy()
+    {
+        Destroy(this.gameObject);
+    }
+
     void Awake()
     {
         title = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
@@ -110,10 +117,11 @@ public class Graph : MonoBehaviour {
         titleDefaultRotation = title.transform.rotation;
     }
 
-    void SetMsgText(string text)
+    void SetMsgText(string text, bool lg)
     {
         var errorMsgObjText = msgObj.transform.GetComponent<Text>();
         errorMsgObjText.text = text;
+        errorMsgObjText.fontSize = lg ? 40 : 20;
         msgObj.GetComponent<Text>().enabled = true;
     }
 
@@ -133,36 +141,47 @@ public class Graph : MonoBehaviour {
     void Update () {
         updateTitlePivotAxis();
 
-        var origin = new Vector3(-0.5f, -0.5f, -5);
-        RaycastHit hitInfo;
-        if (Physics.Raycast(
-                Camera.main.transform.position,
-                Camera.main.transform.forward,
-                out hitInfo,
-                20.0f,
-                Physics.DefaultRaycastLayers))
+        if (this.gameObject.GetComponent<TapToPlace>().placing)
         {
-            // If the Raycast has succeeded and hit a hologram
-            // hitInfo's point represents the position being gazed at
-            // hitInfo's collider GameObject represents the hologram being gazed at
-            // Requires Tooltip.prefab in Resources folder.
-            tooltip.transform.localPosition = origin + new Vector3(hitInfo.point.x, hitInfo.point.y, 0);
-            tooltip.transform.rotation = gameObject.transform.rotation;
-            var tooltipText = tooltip.transform.GetComponent<Text>();
-            tooltipText.text = hitInfo.point.ToString();
-            tooltipText.enabled = true;
-        } else
-        {
+            this.SetMsgText("Tap to place, or say \"Remove\"", true);
             var tooltipText = tooltip.transform.GetComponent<Text>();
             tooltipText.text = "";
             tooltipText.enabled = false;
-        }
+        } else
+        {
+            this.ClearMsgText();
+            var origin = new Vector3(-0.5f, -0.5f, -5);
+            RaycastHit hitInfo;
+            if (Physics.Raycast(
+                    Camera.main.transform.position,
+                    Camera.main.transform.forward,
+                    out hitInfo,
+                    20.0f,
+                    Physics.DefaultRaycastLayers))
+            {
+                // If the Raycast has succeeded and hit a hologram
+                // hitInfo's point represents the position being gazed at
+                // hitInfo's collider GameObject represents the hologram being gazed at
+                // Requires Tooltip.prefab in Resources folder.
+                tooltip.transform.localPosition = origin + new Vector3(hitInfo.point.x, hitInfo.point.y, 0);
+                tooltip.transform.rotation = gameObject.transform.rotation;
+                var tooltipText = tooltip.transform.GetComponent<Text>();
+                tooltipText.text = hitInfo.point.ToString();
+                tooltipText.enabled = true;
+            }
+            else
+            {
+                var tooltipText = tooltip.transform.GetComponent<Text>();
+                tooltipText.text = "";
+                tooltipText.enabled = false;
+            }
+        }  
 
         if (hadError)
         {
 
             hadError = false;
-            this.SetMsgText("ERROR: " + errorMsg);
+            this.SetMsgText("ERROR: " + errorMsg, false);
             
         }
 
@@ -170,7 +189,7 @@ public class Graph : MonoBehaviour {
         {
             Debug.Log("Getting Data From Azure");
             //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
-            this.SetMsgText("Loading...");
+            this.SetMsgText("Loading...", true);
             GetDataFromHgd(AzureStorageConstants.container, datasetToRender);
             needToGetData = false;
         }
@@ -191,7 +210,7 @@ public class Graph : MonoBehaviour {
         yAxis.text = hgd.GetZAxisTitle();
         zAxis.text = hgd.GetYAxisTitle();
 
-        this.SetMsgText("Rendering...");
+        this.SetMsgText("Rendering...", true);
 
         // initialize plot
         if (geometry == "scatter")

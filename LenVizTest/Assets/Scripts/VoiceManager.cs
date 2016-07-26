@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Windows.Speech;
+using UnityEngine.UI;
 
 /// <summary>
 /// KeywordManager allows you to specify keywords and methods in the Unity
@@ -25,25 +26,47 @@ public class VoiceManager : MonoBehaviour
     void Start()
     {
 
-        keywords.Add("Show bar graph", () =>
+        keywords.Add("Hey holograph", () =>
+        {
+            this.showOptions();
+        });
+
+        keywords.Add("Create bar graph", () =>
         {
             this.createGraph("diamonds.hgd");
         });
 
-        keywords.Add("Show scatter plot", () =>
+        keywords.Add("Create scatter plot", () =>
         {
             this.createGraph("iris.hgd");
         });
 
-        keywords.Add("Show surface chart", () =>
+        keywords.Add("Create surface chart", () =>
         {
             this.createGraph("volcano.hgd");
         });
 
-        keywords.Add("Show radar tube", () =>
+        keywords.Add("Create radar tube", () =>
         {
             this.createGraph("mtcars.hgd");
         });
+
+        keywords.Add("Remove", () =>
+        {
+            this.removeGraph();
+        });
+
+        keywords.Add("Start QR", () =>
+        {
+            this.startQR();
+        });
+
+        keywords.Add("Stop QR", () =>
+        {
+            this.stopQR();
+        });
+
+        this.showOptions();
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
@@ -62,6 +85,20 @@ public class VoiceManager : MonoBehaviour
         }
     }
 
+    private void removeGraph()
+    {
+        RaycastHit hitInfo;
+        if (Physics.Raycast(
+                Camera.main.transform.position,
+                Camera.main.transform.forward,
+                out hitInfo,
+                20.0f,
+                Physics.DefaultRaycastLayers))
+        {
+            hitInfo.transform.SendMessage("Destroy");
+        }
+    }
+
     private void createGraph(string dataset)
     {
         var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
@@ -71,6 +108,39 @@ public class VoiceManager : MonoBehaviour
         graph.transform.parent = gameObject.transform;
     }
 
+    private void startQR()
+    {
+
+    }
+
+    private void stopQR()
+    {
+
+    }
+
+    private void showOptions()
+    {
+        var text = "Hello! You can say: \n\n";
+        var options = keywords.Keys.ToArray();
+        foreach (var option in options)
+        {
+            if (!option.Equals(options.First())) {
+                text += option;
+                if (!option.Equals(options.Last()))
+                {
+                    text += '\n';
+                }
+            }
+            
+        }
+        var tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
+        var tooltip = Instantiate(tooltipPrefab);
+        tooltip.transform.parent = GameObject.Find("Canvas").transform;
+        var tooltipText = tooltip.transform.GetComponent<Text>();
+        tooltipText.text = text;
+        tooltip.transform.position = new Vector3(0, 0, 0.5f);
+        tooltipText.enabled = true;
+    }
     void Update()
     {
 
