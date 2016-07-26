@@ -75,8 +75,9 @@ public class Graph : MonoBehaviour {
     private int errorCode = 0;
     private string errorMsg = "";
     private float[,] data;
+    private HoloGraphData hgd;
     private Text title;
-    private GameObject tooltipPrefab, tooltip;
+    private GameObject tooltipPrefab, tooltip, msgObj;
     private KeywordRecognizer keywordRecognizer = null;
     private Dictionary<string, System.Action> keywords = new Dictionary<string, System.Action>();
 
@@ -89,13 +90,35 @@ public class Graph : MonoBehaviour {
     void Awake()
     {
         title = GameObject.Find("/Graph/Canvas/GraphTitle").GetComponent<Text>();
+
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
         tooltip = Instantiate(tooltipPrefab);
         tooltip.transform.parent = GameObject.Find("/Graph/Canvas").transform;
 
+        msgObj = Instantiate(Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject);
+        msgObj.transform.parent = GameObject.Find("/Graph/Canvas").transform;
+        msgObj.transform.localPosition = new Vector3(0f, -0f, -5f);
+        msgObj.transform.rotation = this.gameObject.transform.rotation;
+        msgObj.GetComponent<Text>().enabled = false;
+
         // Cache the title's default rotation.
         titleDefaultRotation = title.transform.rotation;
     }
+
+    void SetMsgText(string text)
+    {
+        var errorMsgObjText = msgObj.transform.GetComponent<Text>();
+        errorMsgObjText.text = text;
+        msgObj.GetComponent<Text>().enabled = true;
+    }
+
+    void ClearMsgText()
+    {
+        var errorMsgObjText = msgObj.transform.GetComponent<Text>();
+        errorMsgObjText.text = "";
+        msgObj.GetComponent<Text>().enabled = false;
+    }
+
 
     // Use this for initialization
     void Start () {
@@ -105,6 +128,7 @@ public class Graph : MonoBehaviour {
             this.title.text = "Bar Graph";
             //this.renderGraph("barplot");
         });
+       
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
@@ -115,7 +139,8 @@ public class Graph : MonoBehaviour {
 
         Debug.Log("Getting Data From Azure");
         //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
-        GetDataFromHgd(AzureStorageConstants.container, "irisTest.hgd");
+        this.SetMsgText("Loading...");
+        GetDataFromHgd(AzureStorageConstants.container, "irisTest.hgd");        
 
         //renderGraph("barplot"); //scatterplot barplot surface radartube
     }
@@ -151,20 +176,14 @@ public class Graph : MonoBehaviour {
         {
 
             hadError = false;
-
-            var errorMsgPre = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
-            var errorMsgObj = Instantiate(errorMsgPre);
-            errorMsgObj.transform.parent = GameObject.Find("/Graph/Canvas").transform;
-
-            errorMsgObj.transform.localPosition = new Vector3(0f, -0f, -5f);
-            errorMsgObj.transform.rotation = this.gameObject.transform.rotation;
-            var errorMsgObjText = errorMsgObj.transform.GetComponent<Text>();
-            errorMsgObjText.text = "ERROR: " + errorMsg;
+            this.SetMsgText("ERROR: " + errorMsg);
+            
         }
 
         if (shouldRender)
         {
             shouldRender = false;
+            this.ClearMsgText();
             renderGraph("scatterplot");
         }
     }
@@ -389,8 +408,7 @@ public class Graph : MonoBehaviour {
 
             memStream.Seek(0, SeekOrigin.Begin);
 
-            var hgd = new HoloGraphData(memStream);
-
+            hgd = new HoloGraphData(memStream);
             data = hgd.Data.To2D();        
 
             requestState.isThisDone.Set();
