@@ -106,11 +106,11 @@ public class Graph : MonoBehaviour {
         Destroy(this.gameObject);
     }
 
-    /*void Rotate()
+    void Rotate()
     {
-        Quaternion currentRotation = this.gameObject.transform.rotation;
-        this.gameObject.transform.rotation = new Quaternion(currentRotation.x, currentRotation.y + 90f, currentRotation.z, currentRotation.w); 
-    }*/
+        var transform = this.gameObject.transform;
+        transform.Rotate(transform.rotation.x, transform.rotation.y + 90, transform.rotation.z);    
+    }
 
     void Awake()
     {

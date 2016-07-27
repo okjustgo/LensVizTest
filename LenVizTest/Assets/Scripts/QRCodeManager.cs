@@ -51,8 +51,6 @@ public class QRCodeManager : MonoBehaviour {
     void StopReading()
     {
         _photoCapture.StopPhotoModeAsync(OnStoppedPhotoMode);
-        var beepDown = GameObject.Find("BeepDown");
-        beepDown.GetComponent<AudioSource>().Play();
     }
 
     private void InitMarkers()
@@ -190,6 +188,7 @@ public class QRCodeManager : MonoBehaviour {
                     Debug.Log("Set Auth correctly");
                     var click = GameObject.Find("MetalClick");
                     click.GetComponent<AudioSource>().Play();
+                    this.StopReading();
                     break;
                 case "graph":
                     if (segments.Length != 4)
@@ -209,6 +208,7 @@ public class QRCodeManager : MonoBehaviour {
                         Debug.Log("rendering graph");
                         var scan = GameObject.Find("BeepScan");
                         scan.GetComponent<AudioSource>().Play();
+                        this.StopReading();
                     }
                     break;
             }          

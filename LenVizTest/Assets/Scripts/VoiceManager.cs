@@ -65,14 +65,16 @@ public class VoiceManager : MonoBehaviour
             this.removeGraph();
         });
 
-        keywords.Add("Start QR", () =>
+        keywords.Add("Read QR", () =>
         {
             this.startQR();
         });
 
-        keywords.Add("Stop QR", () =>
+        keywords.Add("Cancel QR", () =>
         {
             this.stopQR();
+            var beepDown = GameObject.Find("BeepDown");
+            beepDown.GetComponent<AudioSource>().Play();
         });
 
         keywords.Add("Hide options", () =>
