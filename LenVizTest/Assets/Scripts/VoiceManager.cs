@@ -65,6 +65,11 @@ public class VoiceManager : MonoBehaviour
             this.removeGraph();
         });
 
+        keywords.Add("Reset world", () =>
+        {
+            this.resetWorld();
+        });
+
         keywords.Add("Start QR", () =>
         {
             this.startQR();
@@ -79,7 +84,6 @@ public class VoiceManager : MonoBehaviour
         {
             this.hideOptions();
         });
-
 
         //this.startQR();
         //Used for quick testing
@@ -116,6 +120,15 @@ public class VoiceManager : MonoBehaviour
                 Physics.DefaultRaycastLayers))
         {
             hitInfo.transform.SendMessage("Destroy");
+        }
+    }
+
+    private void resetWorld()
+    {
+        var graphs = GameObject.FindGameObjectsWithTag("GraphTag");
+        foreach (var graph in graphs)
+        {
+            graph.SendMessage("Destroy");
         }
     }
 
