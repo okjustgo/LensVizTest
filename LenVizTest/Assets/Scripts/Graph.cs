@@ -444,6 +444,24 @@ public class Graph : MonoBehaviour {
 
             return;
         }
+        catch (WebException e)
+        {
+            Debug.Log("\nRespCallback WebException raised!");
+            Debug.Log(string.Format("\nMessage:{0}", e.Message));
+            //Debug.Log(string.Format("\nStatus:{0}", e.Status));
+            errorMsg = e.Message;
+            hadError = true;
+            //throw;
+        }
+        catch (SystemException e)
+        {
+            Debug.Log("\nRespCallback SystemException raised!");
+            Debug.Log(string.Format("\nMessage:{0}", e.Message));
+            //Debug.Log(string.Format("\nStatus:{0}", e.Status));
+            errorMsg = e.Message;
+            hadError = true;
+            //throw;
+        }
         catch (Exception e)
         {
             Debug.Log("\nRespCallback Exception raised!");
@@ -453,6 +471,7 @@ public class Graph : MonoBehaviour {
             hadError = true;
             //throw;
         }
+
     }
 
     private void ResponseCallback(IAsyncResult result)
