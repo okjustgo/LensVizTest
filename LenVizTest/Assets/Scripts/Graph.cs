@@ -167,7 +167,7 @@ public class Graph : MonoBehaviour {
 
         if (this.gameObject.GetComponent<GraphMover>().placing)
         {
-            this.SetMsgText("Tap to place, or say \"remove graph\"", true, msgObj);
+            this.SetMsgText("Tap to place, or say \"remove\"", true, msgObj);
             var tooltipText = tooltip.transform.GetComponent<Text>();
             tooltipText.text = "";
             tooltipText.enabled = false;

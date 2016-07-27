@@ -17,7 +17,6 @@ public class QRCodeManager : MonoBehaviour {
     public float cornerDistance; // distance between adjacent QR corners in meters
     public float verticalFOV = 48; // Vertical FOV in degrees of the physical camera, not the unity camera
 
-    private GameObject audio = null;
     private PhotoCapture _photoCapture = null;
     private Texture2D _sourceTexture;
     private Ray _debugRay;
@@ -189,7 +188,8 @@ public class QRCodeManager : MonoBehaviour {
                     AzureStorageConstants.Account = segments[1];
                     AzureStorageConstants.KeyString = segments[2];
                     Debug.Log("Set Auth correctly");
-                    audio.GetComponent<AudioSource>().Play();
+                    var click = GameObject.Find("MetalClick");
+                    click.GetComponent<AudioSource>().Play();
                     break;
                 case "graph":
                     if (segments.Length != 4)
@@ -207,7 +207,8 @@ public class QRCodeManager : MonoBehaviour {
                         renderedQR.Add(timestamp, true);
                         Graph.createGraph(blob);
                         Debug.Log("rendering graph");
-                        audio.GetComponent<AudioSource>().Play();
+                        var scan = GameObject.Find("BeepScan");
+                        scan.GetComponent<AudioSource>().Play();
                     }
                     break;
             }          
@@ -217,10 +218,10 @@ public class QRCodeManager : MonoBehaviour {
         }
         else
         {
-            for (int i = 0; i < _markers.Length; i++)
-            {
-                _markers[i].GetComponent<Renderer>().enabled = false;
-            }
+            //for (int i = 0; i < _markers.Length; i++)
+            //{
+            //    _markers[i].GetComponent<Renderer>().enabled = false;
+            //}
 
             //Debug.Log("No QR code found");
         }

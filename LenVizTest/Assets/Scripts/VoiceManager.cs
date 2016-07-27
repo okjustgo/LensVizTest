@@ -35,32 +35,32 @@ public class VoiceManager : MonoBehaviour
              this.showOptions();
          });
 
-        keywords.Add("Create bar graph", () =>
+        keywords.Add("Load diamonds", () =>
         {
             this.createGraph("diamonds.hgd");
         });
 
-        keywords.Add("Create scatter plot", () =>
+        keywords.Add("Load iris", () =>
         {
             this.createGraph("iris.hgd");
         });
 
-        keywords.Add("Create surface chart", () =>
+        keywords.Add("Load volcano", () =>
         {
             this.createGraph("volcano.hgd");
         });
 
-        keywords.Add("Create radar tube", () =>
+        keywords.Add("Load cars", () =>
         {
             this.createGraph("mtcars.hgd");
         });
 
-        /*keywords.Add("Rotate graph", () =>
+        keywords.Add("Rotate", () =>
         {
             this.rotateGraph();
-        });*/
+        });
 
-        keywords.Add("Remove graph", () =>
+        keywords.Add("Remove", () =>
         {
             this.removeGraph();
         });
@@ -83,7 +83,8 @@ public class VoiceManager : MonoBehaviour
 
         //this.startQR();
         //Used for quick testing
-        this.createGraph("volcano.hgd");
+        this.startQR();
+        //this.createGraph("volcano.hgd");
         this.showOptions();
 
         // Tell the KeywordRecognizer about our keywords.
@@ -105,7 +106,7 @@ public class VoiceManager : MonoBehaviour
 
     private void removeGraph()
     {
-        this.hideOptions();
+        //this.hideOptions();
         RaycastHit hitInfo;
         if (Physics.Raycast(
                 Camera.main.transform.position,
@@ -120,7 +121,7 @@ public class VoiceManager : MonoBehaviour
 
     private void rotateGraph()
     {
-        this.hideOptions();
+        //this.hideOptions();
         RaycastHit hitInfo;
         if (Physics.Raycast(
                 Camera.main.transform.position,
