@@ -55,6 +55,11 @@ public class VoiceManager : MonoBehaviour
             this.createGraph("mtcars.hgd");
         });
 
+        /*keywords.Add("Rotate graph", () =>
+        {
+            this.rotateGraph();
+        });*/
+
         keywords.Add("Remove graph", () =>
         {
             this.removeGraph();
@@ -76,9 +81,6 @@ public class VoiceManager : MonoBehaviour
         });
 
         this.showOptions();
-        //this.createGraph("volcano.hgd");
-        //this.createGraph("iris.hgd");
-        //this.startQR();
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
@@ -109,6 +111,21 @@ public class VoiceManager : MonoBehaviour
                 Physics.DefaultRaycastLayers))
         {
             hitInfo.transform.SendMessage("Destroy");
+        }
+    }
+
+    private void rotateGraph()
+    {
+        this.hideOptions();
+        RaycastHit hitInfo;
+        if (Physics.Raycast(
+                Camera.main.transform.position,
+                Camera.main.transform.forward,
+                out hitInfo,
+                20.0f,
+                Physics.DefaultRaycastLayers))
+        {
+            hitInfo.transform.SendMessage("Rotate");
         }
     }
 

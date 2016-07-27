@@ -106,6 +106,12 @@ public class Graph : MonoBehaviour {
         Destroy(this.gameObject);
     }
 
+    /*void Rotate()
+    {
+        Quaternion currentRotation = this.gameObject.transform.rotation;
+        this.gameObject.transform.rotation = new Quaternion(currentRotation.x, currentRotation.y + 90f, currentRotation.z, currentRotation.w); 
+    }*/
+
     void Awake()
     {
         title = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
