@@ -133,7 +133,7 @@ public class VoiceManager : MonoBehaviour
 
     private void showOptions()
     {
-        var text = "Hello! You can say: \n\n";
+        var text = "Hi! You can say: \n\n";
         var options = keywords.Keys.ToArray();
         foreach (var option in options)
         {
@@ -159,6 +159,7 @@ public class VoiceManager : MonoBehaviour
         toQuat.x = 0;
         toQuat.z = 0;
         message.transform.rotation = toQuat;
+        message.SetActive(true);
     }
 
     private void hideOptions()
@@ -166,11 +167,12 @@ public class VoiceManager : MonoBehaviour
         var messageText = message.transform.GetComponent<Text>();
         messageText.text = "";
         messageText.enabled = false;
+        message.SetActive(false);
     }
 
     void Update()
     {
-        if (message.transform.GetComponent<Text>().enabled)
+        /*if (message.transform.GetComponent<Text>().enabled)
         {
             var headPosition = Camera.main.transform.position;
             var gazeDirection = Camera.main.transform.forward;
@@ -180,7 +182,7 @@ public class VoiceManager : MonoBehaviour
             toQuat.x = 0;
             toQuat.z = 0;
             message.transform.rotation = toQuat;
-        }
+        }*/
     }
 
     void OnDestroy()
