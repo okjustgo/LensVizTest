@@ -83,14 +83,14 @@ public class BarGraph : MonoBehaviour
         float yPad = (float)(yWidth * 0.05);
 
         // Requires TickMark.prefab in Resources folder.
-        GameObject tickmarkPrefab = Resources.Load(@"TickMark", typeof(GameObject)) as GameObject;
+        /*GameObject tickmarkPrefab = Resources.Load(@"TickMark", typeof(GameObject)) as GameObject;
         for (float xAxisPos = 0.1f; xAxisPos <= 1f; xAxisPos += 0.1f)
         {
             var tickmark = Instantiate(tickmarkPrefab);
             tickmark.transform.parent = gameObject.transform;
             tickmark.transform.localPosition = origin + new Vector3(xAxisPos, 0, -1.1f);
             tickmark.transform.rotation = gameObject.transform.rotation;
-        }
+        }*/
 
         for (int i = 0; i < x.Length; i += 1)
         {
