@@ -1,11 +1,11 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using HoloToolkit.Sharing;
 using HoloToolkit.Unity;
 using System.Collections.Generic;
 using UnityEngine;
 
+#if UNDEF
 public class DataMessages : Singleton<DataMessages>
 {
     /// <summary>
@@ -174,7 +174,7 @@ public class DataMessages : Singleton<DataMessages>
         }
     }
 
-    #region HelperFunctionsForWriting
+#region HelperFunctionsForWriting
 
     void AppendTransform(NetworkOutMessage msg, Vector3 position, Quaternion rotation)
     {
@@ -197,9 +197,9 @@ public class DataMessages : Singleton<DataMessages>
         msg.Write(rotation.w);
     }
 
-    #endregion HelperFunctionsForWriting
+#endregion HelperFunctionsForWriting
 
-    #region HelperFunctionsForReading
+#region HelperFunctionsForReading
 
     public Vector3 ReadVector3(NetworkInMessage msg)
     {
@@ -211,5 +211,7 @@ public class DataMessages : Singleton<DataMessages>
         return new Quaternion(msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat(), msg.ReadFloat());
     }
 
-    #endregion HelperFunctionsForReading
+#endregion HelperFunctionsForReading
+
 }
+#endif

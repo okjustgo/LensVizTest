@@ -80,6 +80,9 @@ public class VoiceManager : MonoBehaviour
             this.hideOptions();
         });
 
+        
+        //this.startQR();
+        this.createGraph("volcano.hgd");
         this.showOptions();
 
         // Tell the KeywordRecognizer about our keywords.
@@ -137,13 +140,13 @@ public class VoiceManager : MonoBehaviour
 
     private void startQR()
     {
-        this.hideOptions();
+        //this.hideOptions();
         GameObject.Find("Managers").GetComponent<QRCodeManager>().SendMessage("StartReading");
     }
 
     private void stopQR()
     {
-        this.hideOptions();
+        //this.hideOptions();
         GameObject.Find("Managers").GetComponent<QRCodeManager>().SendMessage("StopReading");
     }
 

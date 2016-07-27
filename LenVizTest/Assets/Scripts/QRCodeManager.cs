@@ -37,7 +37,7 @@ public class QRCodeManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        audio = GameObject.Find("Beep");
+        //audio = 
         //PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
         //InitMarkers();
     }
@@ -45,13 +45,15 @@ public class QRCodeManager : MonoBehaviour {
     void StartReading()
     {
         PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
-        audio.GetComponent<AudioSource>().Play();
+        var beepUp = GameObject.Find("BeepUp");
+        beepUp.GetComponent<AudioSource>().Play();
     }
 
     void StopReading()
     {
         _photoCapture.StopPhotoModeAsync(OnStoppedPhotoMode);
-        audio.GetComponent<AudioSource>().Play();
+        var beepDown = GameObject.Find("BeepDown");
+        beepDown.GetComponent<AudioSource>().Play();
     }
 
     private void InitMarkers()
