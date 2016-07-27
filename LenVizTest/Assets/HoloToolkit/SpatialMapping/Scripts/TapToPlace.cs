@@ -22,21 +22,22 @@ namespace HoloToolkit.Unity
         // Called by GazeGestureManager when the user performs a tap gesture.
         void OnSelect()
         {
+            placing = !placing;
             if (SpatialMappingManager.Instance != null)
             {
                 // On each tap gesture, toggle whether the user is in placing mode.
-                placing = !placing;
+              
 
-                // If the user is in placing mode, display the spatial mapping mesh.
-                if (placing)
-                {
-                    SpatialMappingManager.Instance.DrawVisualMeshes = true;
-                }
-                // If the user is not in placing mode, hide the spatial mapping mesh.
-                else
-                {
-                    SpatialMappingManager.Instance.DrawVisualMeshes = false;
-                }
+                //// If the user is in placing mode, display the spatial mapping mesh.
+                //if (placing)
+                //{
+                //    //SpatialMappingManager.Instance.DrawVisualMeshes = true;
+                //}
+                //// If the user is not in placing mode, hide the spatial mapping mesh.
+                //else
+                //{
+                //    //SpatialMappingManager.Instance.DrawVisualMeshes = false;
+                //}
             }
             else
             {
@@ -56,7 +57,7 @@ namespace HoloToolkit.Unity
                 var gazeDirection = Camera.main.transform.forward;
 
                 // Snap it to your face
-                this.transform.position = headPosition + (gazeDirection*3);
+                this.transform.position = headPosition + (gazeDirection*2.3f);
                 //this.transform.localPosition += new Vector3(0f, 0.5f, -0.5f);
 
                 // TODO: Add collison with the floor or surfaces.
