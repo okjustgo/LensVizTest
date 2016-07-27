@@ -55,10 +55,10 @@ public class VoiceManager : MonoBehaviour
             this.createGraph("mtcars.hgd");
         });
 
-        /*keywords.Add("Rotate", () =>
+        keywords.Add("Rotate", () =>
         {
             this.rotateGraph();
-        });*/
+        });
 
         keywords.Add("Remove", () =>
         {
@@ -85,7 +85,7 @@ public class VoiceManager : MonoBehaviour
 
         //this.startQR();
         //Used for quick testing
-        this.startQR();
+        //this.startQR();
         //this.createGraph("volcano.hgd");
         this.showOptions();
 
