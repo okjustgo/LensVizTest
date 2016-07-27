@@ -70,7 +70,6 @@ public class VoiceManager : MonoBehaviour
             this.resetWorld();
         });
 
-        keywords.Add("Start QR", () =>
         keywords.Add("Read QR", () =>
         {
             this.startQR();
