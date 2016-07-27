@@ -55,10 +55,10 @@ public class VoiceManager : MonoBehaviour
             this.createGraph("mtcars.hgd");
         });
 
-        keywords.Add("Rotate", () =>
+        /*keywords.Add("Rotate", () =>
         {
             this.rotateGraph();
-        });
+        });*/
 
         keywords.Add("Remove", () =>
         {
@@ -158,14 +158,14 @@ public class VoiceManager : MonoBehaviour
         var options = keywords.Keys.ToArray();
         foreach (var option in options)
         {
-            if (!option.Equals(options.First()))
-            {
+            /*if (!option.Equals(options.First()))
+            {*/
                 text += option;
                 if (!option.Equals(options.Last()))
                 {
                     text += '\n';
                 }
-            }
+            /*}*/
 
         }
         var messageText = message.transform.GetComponent<Text>();
