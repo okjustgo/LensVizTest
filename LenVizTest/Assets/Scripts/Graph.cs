@@ -91,6 +91,16 @@ public class Graph : MonoBehaviour {
     // Overrides the cached value of the title's default rotation.
     public Quaternion titleDefaultRotation { get; private set; }
 
+
+    public static GameObject createGraph(string dataset)
+    {
+        var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
+        var graph = Instantiate(graphPrefab);
+        graph.SendMessage("OnSelect");
+        graph.GetComponent<Graph>().datasetToRender = dataset;
+        return graph;
+        //graph.transform.parent = gameObject.transform;
+    }
     void Destroy()
     {
         Destroy(this.gameObject);
