@@ -35,6 +35,16 @@ public class VoiceManager : MonoBehaviour
              this.showOptions();
          });
 
+        keywords.Add("Load cars", () =>
+        {
+            this.createGraph("mtcars.hgd");
+        });
+
+        keywords.Add("Load volcano", () =>
+        {
+            this.createGraph("volcano.hgd");
+        });
+
         keywords.Add("Load diamonds", () =>
         {
             this.createGraph("diamonds.hgd");
@@ -45,14 +55,9 @@ public class VoiceManager : MonoBehaviour
             this.createGraph("iris.hgd");
         });
 
-        keywords.Add("Load volcano", () =>
+        keywords.Add("Load UK", () =>
         {
-            this.createGraph("volcano.hgd");
-        });
-
-        keywords.Add("Load cars", () =>
-        {
-            this.createGraph("mtcars.hgd");
+            this.createGraph("ukswap.hgd");
         });
 
         keywords.Add("Rotate", () =>
