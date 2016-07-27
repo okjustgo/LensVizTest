@@ -80,8 +80,9 @@ public class VoiceManager : MonoBehaviour
             this.hideOptions();
         });
 
-        
+
         //this.startQR();
+        //Used for quick testing
         this.createGraph("volcano.hgd");
         this.showOptions();
 
@@ -134,7 +135,7 @@ public class VoiceManager : MonoBehaviour
 
     private void createGraph(string dataset)
     {
-        this.hideOptions();
+        //this.hideOptions();
         Graph.createGraph(dataset);        
     }
 

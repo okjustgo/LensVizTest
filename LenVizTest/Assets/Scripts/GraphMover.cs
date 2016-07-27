@@ -21,7 +21,7 @@ public class GraphMover : MonoBehaviour
     // Called by GazeGestureManager when the user performs a tap gesture.
     void OnSelect()
     {
-        placing = !placing;
+        placing = !placing;        
         //if (SpatialMappingManager.Instance != null)
         //{
         //    // On each tap gesture, toggle whether the user is in placing mode.

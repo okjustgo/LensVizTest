@@ -83,7 +83,7 @@ public class Graph : MonoBehaviour {
     private Text xAxis;
     private Text yAxis;
     private Text zAxis;
-    private GameObject tooltipPrefab, tooltip, msgObj;
+    private GameObject tooltipPrefab, tooltip, msgObj, statusObj;
 
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
@@ -125,27 +125,35 @@ public class Graph : MonoBehaviour {
 
         msgObj = Instantiate(Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject);
         msgObj.transform.parent = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas");
-        msgObj.transform.localPosition = new Vector3(0f, -0f, -5f);
+        msgObj.transform.localPosition = new Vector3(0f, -2f, -5f);
         msgObj.transform.rotation = this.gameObject.transform.rotation;
         msgObj.GetComponent<Text>().enabled = false;
+
+        statusObj = Instantiate(Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject);
+        statusObj.transform.parent = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas");
+        statusObj.transform.localPosition = new Vector3(0f, 3f, -5f);
+        statusObj.transform.rotation = this.gameObject.transform.rotation;
+        statusObj.GetComponent<Text>().enabled = false;
+
+        this.SetMsgText("Loading...", true, statusObj);
 
         // Cache the title's default rotation.
         titleDefaultRotation = title.transform.rotation;
     }
 
-    void SetMsgText(string text, bool lg)
+    void SetMsgText(string text, bool lg, GameObject textObj)
     {
-        var errorMsgObjText = msgObj.transform.GetComponent<Text>();
+        var errorMsgObjText = textObj.transform.GetComponent<Text>();
         errorMsgObjText.text = text;
-        errorMsgObjText.fontSize = lg ? 40 : 20;
-        msgObj.GetComponent<Text>().enabled = true;
+        errorMsgObjText.fontSize = lg ? 40 : 25;
+        textObj.GetComponent<Text>().enabled = true;
     }
 
-    void ClearMsgText()
+    void ClearMsgText(GameObject textObj)
     {
-        var errorMsgObjText = msgObj.transform.GetComponent<Text>();
+        var errorMsgObjText = textObj.transform.GetComponent<Text>();
         errorMsgObjText.text = "";
-        msgObj.GetComponent<Text>().enabled = false;
+        textObj.GetComponent<Text>().enabled = false;
     }
 
     // Use this for initialization
@@ -159,13 +167,13 @@ public class Graph : MonoBehaviour {
 
         if (this.gameObject.GetComponent<GraphMover>().placing)
         {
-            this.SetMsgText("Tap to place, or say \"remove graph\"", true);
+            this.SetMsgText("Tap to place, or say \"remove graph\"", true, msgObj);
             var tooltipText = tooltip.transform.GetComponent<Text>();
             tooltipText.text = "";
             tooltipText.enabled = false;
         } else
         {
-            this.ClearMsgText();
+            this.ClearMsgText(msgObj);
             var origin = new Vector3(-0.5f, -0.5f, -5);
             RaycastHit hitInfo;
             if (Physics.Raycast(
@@ -197,22 +205,21 @@ public class Graph : MonoBehaviour {
         {
 
             hadError = false;
-            this.SetMsgText("ERROR: " + errorMsg, false);
+            this.SetMsgText("ERROR: " + errorMsg, false, statusObj);
             
         }
 
         if (needToGetData && !string.IsNullOrEmpty(datasetToRender))
         {
             Debug.Log("Getting Data From Azure");
-            //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");
-            this.SetMsgText("Loading...", true);
+            //GetDataFromAzure(AzureStorageConstants.container, "irisData2.hgd");            
             GetDataFromHgd(AzureStorageConstants.container, datasetToRender);
             needToGetData = false;
         }
         if (shouldRender)
         {
             shouldRender = false;
-            this.ClearMsgText();
+            this.ClearMsgText(statusObj);
             renderGraph();
         }
     }
@@ -226,7 +233,7 @@ public class Graph : MonoBehaviour {
         yAxis.text = hgd.GetZAxisTitle();
         zAxis.text = hgd.GetYAxisTitle();
 
-        this.SetMsgText("Rendering...", true);
+        this.SetMsgText("Rendering...", true, statusObj);
 
         // initialize plot
         if (geometry == "scatter")
@@ -325,7 +332,7 @@ public class Graph : MonoBehaviour {
 
             RadarTube.Render(gameObject, t, R);
         }
-        this.ClearMsgText();
+        this.ClearMsgText(statusObj);
     }
 
     // Keeps the title facing the camera.
@@ -393,6 +400,8 @@ public class Graph : MonoBehaviour {
             var requestState = new RequestState();
             requestState.request = request;
 
+            Debug.Log("Making Web Call");
+
             IAsyncResult result = (IAsyncResult)request.BeginGetResponse(new AsyncCallback(ParseHgdCallback), requestState);
         }
         catch (Exception e)
@@ -423,6 +432,8 @@ public class Graph : MonoBehaviour {
             }
 
             memStream.Seek(0, SeekOrigin.Begin);
+
+            Debug.Log("Parsing data");
 
             hgd = new HoloGraphData(memStream);       
 
