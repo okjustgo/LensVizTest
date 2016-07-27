@@ -157,7 +157,7 @@ public class Graph : MonoBehaviour {
     void Update () {
         updateTitlePivotAxis();
 
-        if (this.gameObject.GetComponent<TapToPlace>().placing)
+        if (this.gameObject.GetComponent<GraphMover>().placing)
         {
             this.SetMsgText("Tap to place, or say \"remove graph\"", true);
             var tooltipText = tooltip.transform.GetComponent<Text>();

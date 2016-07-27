@@ -277,7 +277,11 @@ public class QRCodeManager : MonoBehaviour {
 
     void OnDestroy()
     {
-        _photoCapture.StopPhotoModeAsync(OnStoppedPhotoMode);
+        if(_photoCapture != null)
+        {
+            _photoCapture.StopPhotoModeAsync(OnStoppedPhotoMode);
+        }
+        
     }
 
     void OnStoppedPhotoMode(PhotoCapture.PhotoCaptureResult result)
