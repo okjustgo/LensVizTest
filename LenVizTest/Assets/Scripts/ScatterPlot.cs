@@ -67,16 +67,21 @@ public class ScatterPlot : MonoBehaviour
             }
         }
 
+
         var particles = gameObject.GetComponentInChildren<ParticleSystem>();
         var points = new ParticleSystem.Particle[numPoints];
+        var parentPosition = gameObject.transform.position;
+        var parentRotation = gameObject.transform.rotation;
+        var parentScale = gameObject.transform.localScale;
         for (int i = 0; i < numPoints; i++)
         {
             // Scale point to range [0, 1].
-            float xVal = (x[i] - 1.0f*xMin) / (1.0f * xMax - 1.0f * xMin);
-            float yVal = (y[i] - 1.0f*yMin) / (1.0f * yMax - 1.0f * yMin);
-            float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin);
+            float xVal = (x[i] - 1.0f*xMin) / (1.0f * xMax - 1.0f * xMin) - 0.5f;
+            float yVal = (y[i] - 1.0f*yMin) / (1.0f * yMax - 1.0f * yMin) - 0.5f;
+            float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin) - 0.5f;
             // Flip Z and Y so Z values scale vertically.
-            points[i].position = new Vector3(xVal, zVal, yVal);
+            var position = new Vector3(parentScale.x * xVal, parentScale.z * zVal, parentScale.y * yVal);
+            points[i].position = parentRotation * position + parentPosition;
             points[i].startColor = availableColors[(int)series[i] % availableColors.Length];
             points[i].startSize = 0.03f;
         }

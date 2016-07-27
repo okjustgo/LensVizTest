@@ -85,6 +85,10 @@ public class Graph : MonoBehaviour {
     private Text zAxis;
     private GameObject tooltipPrefab, tooltip, msgObj, statusObj;
 
+    private Quaternion prevRotation;
+    private Vector3 prevPosition;
+
+
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
 
@@ -159,12 +163,14 @@ public class Graph : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        prevRotation = transform.rotation;
+        prevPosition = transform.position;
     }
 
     // Update is called once per frame
     void Update () {
         updateTitlePivotAxis();
-
+        
         if (this.gameObject.GetComponent<GraphMover>().placing)
         {
             this.SetMsgText("Tap to place, or say \"remove\"", true, msgObj);
@@ -216,12 +222,15 @@ public class Graph : MonoBehaviour {
             GetDataFromHgd(AzureStorageConstants.container, datasetToRender);
             needToGetData = false;
         }
-        if (shouldRender)
+        if (shouldRender || (hgd != null && (prevRotation != transform.rotation || prevPosition != transform.position)))
         {
             shouldRender = false;
             this.ClearMsgText(statusObj);
             renderGraph();
         }
+
+        prevRotation = transform.rotation;
+        prevPosition = transform.position;
     }
 
     private void renderGraph()
