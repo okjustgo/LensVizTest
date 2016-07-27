@@ -29,11 +29,11 @@ public class VoiceManager : MonoBehaviour
         messagePrefab = Resources.Load(@"Message", typeof(GameObject)) as GameObject;
         message = Instantiate(messagePrefab);
         message.transform.parent = GameObject.Find("Canvas").transform;
-
+        
         keywords.Add("Show options", () =>
-        {
-            this.showOptions();
-        });
+         {
+             this.showOptions();
+         });
 
         keywords.Add("Create bar graph", () =>
         {
@@ -76,6 +76,9 @@ public class VoiceManager : MonoBehaviour
         });
 
         this.showOptions();
+        //this.createGraph("volcano.hgd");
+        //this.createGraph("iris.hgd");
+        //this.startQR();
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());
@@ -112,11 +115,7 @@ public class VoiceManager : MonoBehaviour
     private void createGraph(string dataset)
     {
         this.hideOptions();
-        var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
-        var graph = Instantiate(graphPrefab);
-        graph.SendMessage("OnSelect");
-        graph.GetComponent<Graph>().datasetToRender = dataset;
-        graph.transform.parent = gameObject.transform;
+        Graph.createGraph(dataset);        
     }
 
     private void startQR()
@@ -137,14 +136,15 @@ public class VoiceManager : MonoBehaviour
         var options = keywords.Keys.ToArray();
         foreach (var option in options)
         {
-            if (!option.Equals(options.First())) {
+            if (!option.Equals(options.First()))
+            {
                 text += option;
                 if (!option.Equals(options.Last()))
                 {
                     text += '\n';
                 }
             }
-            
+
         }
         var messageText = message.transform.GetComponent<Text>();
         messageText.text = text;

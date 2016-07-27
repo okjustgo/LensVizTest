@@ -10,7 +10,7 @@ qrcode_gen(code,softLimitFlag = TRUE)
 type <- 'graph'
 ms <- as.character(as.integer(as.POSIXct(Sys.time())))
 container <- 'holograph'
-blob <- 'irisTest_test.hgd'
+blob <- 'mtcars.hgd'
 code <- paste(type, ms, container, blob, sep='|')
 code
 #qrcode_gen(code)

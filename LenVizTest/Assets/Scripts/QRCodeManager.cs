@@ -17,6 +17,7 @@ public class QRCodeManager : MonoBehaviour {
     public float cornerDistance; // distance between adjacent QR corners in meters
     public float verticalFOV = 48; // Vertical FOV in degrees of the physical camera, not the unity camera
 
+    private GameObject audio = null;
     private PhotoCapture _photoCapture = null;
     private Texture2D _sourceTexture;
     private Ray _debugRay;
@@ -24,7 +25,9 @@ public class QRCodeManager : MonoBehaviour {
     private GameObject[] _markers;
 //#if NETFX_CORE
     private Result qrResult;
-//#endif
+    //#endif
+
+    private Dictionary<string, bool> renderedQR = new Dictionary<string, bool>();
 
     public float colorThreshold;
     public string qrResultText { get; private set; }
@@ -34,18 +37,21 @@ public class QRCodeManager : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        audio = GameObject.Find("Beep");
         //PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
-        InitMarkers();
+        //InitMarkers();
     }
 
     void StartReading()
     {
         PhotoCapture.CreateAsync(false, OnPhotoCaptureCreated);
+        audio.GetComponent<AudioSource>().Play();
     }
 
     void StopReading()
     {
         _photoCapture.StopPhotoModeAsync(OnStoppedPhotoMode);
+        audio.GetComponent<AudioSource>().Play();
     }
 
     private void InitMarkers()
@@ -67,7 +73,7 @@ public class QRCodeManager : MonoBehaviour {
         IEnumerable<Resolution> cameraResolutions = PhotoCapture.SupportedResolutions;
         //Resolution cameraResolution = cameraResolutions.ToArray()[15]; // 800x600 using the logicool webcam. Closest I could get to to HoloLens' 896x504 resolution
         var reso = PhotoCapture.SupportedResolutions.OrderByDescending((res) => res.width * res.height).ToArray();
-        Resolution cameraResolution = reso[8]; //reso[8]; //reso.Last();
+        Resolution cameraResolution = reso.Last(); //reso[8]; //reso.Last();
         Debug.Log(string.Format("Camera Resolution: {0}x{1}", cameraResolution.width, cameraResolution.height));
 
         // GameObject source = GameObject.Find("Display");
@@ -170,7 +176,6 @@ public class QRCodeManager : MonoBehaviour {
             qrResultText = qrResult.Text;
 
             var segments = qrResultText.Split('|');
-            GameObject audio = GameObject.Find("Beep");
             switch (segments[0])
             {
                 case "auth":
@@ -193,9 +198,15 @@ public class QRCodeManager : MonoBehaviour {
                     var timestamp = segments[1];
                     AzureStorageConstants.container = segments[2];
                     var blob = segments[3];
+                    //blob = "iris.hgd";
 
-                    Debug.Log("rendering graph");
-                    audio.GetComponent<AudioSource>().Play();
+                    if (!renderedQR.ContainsKey(timestamp))
+                    {
+                        renderedQR.Add(timestamp, true);
+                        Graph.createGraph(blob);
+                        Debug.Log("rendering graph");
+                        audio.GetComponent<AudioSource>().Play();
+                    }
                     break;
             }          
 
