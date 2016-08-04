@@ -17,3 +17,5 @@ When connecting to Azure in a UWP, you'll need to enable the following settings 
 	- Internet (Client & Server)
 	- Internet (Client)
 	- Private Networks (Client & Server)
+
+minor change
