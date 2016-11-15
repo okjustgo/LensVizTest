@@ -16,7 +16,7 @@ namespace DataApp
             var connection = ConfigurationManager.AppSettings["StorageConnectionString"];
             var ht = new HoloGraphTransfer(connection, "holograph");
             
-            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Fuel Economy.tsv", "string;string;float;float;float;string;string;float;float;string", "point", "HighwayMpg", "DisplacementInLiters", "Year", "NumberOfCylinders");
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Fuel Economy.tsv", "string;string;float;float;float;float;float;float;float", "point", "Horsepower", "MilesPerGallon", "Displacement", "NumberOfCylinders");
             CheckFile("Fuel_Economy.hgd");
 
             ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Price of Diamonds by Quality.tsv", "float;float;string;string;string;float;float;float;float;float", "point", "Carat", "Clarity", "Price", "Quality");
