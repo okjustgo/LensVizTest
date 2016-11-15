@@ -238,7 +238,8 @@ public class Graph : MonoBehaviour {
         // initialize plot
         if (geometry == "point")
         {
-            ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"));
+            var colorIsCategorical = hgd.Mappings.ContainsKey(hgd.Aesthetics["color"]);
+            ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"), colorIsCategorical);
         }
         if (geometry == "bar")
         {

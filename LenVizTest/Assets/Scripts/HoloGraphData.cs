@@ -64,6 +64,20 @@ namespace HoloGraph
             Data = list.ToArray();
         }
 
+        public void SetAesthetic(string aesthetic, string columnName)
+        {
+            if (!SupportedAesthetics.Contains(aesthetic))
+            {
+                throw new ArgumentException(string.Format("Unsupported aesthetic '{0}'", aesthetic));
+            }
+            if (!ColumnNames.Contains(columnName))
+            {
+                throw new ArgumentException(string.Format("Unknown column '{0}'", columnName));
+            }
+
+            Aesthetics[aesthetic] = columnName;
+        }
+
         public string PackViewJson()
         {
             var str = string.Format("'title': '{0}',", Title);

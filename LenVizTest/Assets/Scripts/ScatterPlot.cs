@@ -1,18 +1,9 @@
 ﻿using UnityEngine;
 using System;
+using Assets.Scripts;
 
 public class ScatterPlot : MonoBehaviour
 {
-    private static Color[] availableColors = new Color[] {
-        new Color(1, 0, 0),
-        new Color(0, 1, 0),
-        new Color(0, 0, 1),
-        new Color(1, 1, 0),
-        new Color(1, 0, 1),
-        new Color(1, 1, 0),
-        new Color(0, 1, 1)
-    };
-
     // Use this for initialization
     void Start()
     {
@@ -23,9 +14,9 @@ public class ScatterPlot : MonoBehaviour
     {
     }
 
-    public static void Render(GameObject gameObject, float[] x, float[] y, float[] z, float[] series)
+    public static void Render(GameObject gameObject, float[] x, float[] y, float[] z, float[] color, bool colorIsCategorical = false)
     {
-        if(!(x.Length == y.Length && y.Length == z.Length && z.Length == series.Length))
+        if(!(x.Length == y.Length && y.Length == z.Length && z.Length == color.Length))
         {
             throw new ArgumentException("Length of x, y, z, and series to scatterplot must all be equal");
         }
@@ -37,7 +28,9 @@ public class ScatterPlot : MonoBehaviour
         float yMax = float.MinValue;
         float zMin = float.MaxValue;
         float zMax = float.MinValue;
-        for(long i = 0; i < numPoints; i++)
+        float colorMin = float.MaxValue;
+        float colorMax = float.MinValue;
+        for (long i = 0; i < numPoints; i++)
         {
             if (x[i] < xMin)
             {
@@ -65,9 +58,19 @@ public class ScatterPlot : MonoBehaviour
             {
                 zMax = z[i];
             }
+
+            if (color[i] < colorMin)
+            {
+                colorMin = color[i];
+            }
+            if (color[i] > colorMax)
+            {
+                colorMax = color[i];
+            }
         }
 
-
+        var numUniqueColors = (int) (colorMax - colorMin) + 1;
+        
         var particles = gameObject.GetComponentInChildren<ParticleSystem>();
         var points = new ParticleSystem.Particle[numPoints];
         var parentPosition = gameObject.transform.position;
@@ -82,7 +85,17 @@ public class ScatterPlot : MonoBehaviour
             // Flip Z and Y so Z values scale vertically.
             var position = new Vector3(parentScale.x * xVal, parentScale.z * zVal, parentScale.y * yVal);
             points[i].position = parentRotation * position + parentPosition;
-            points[i].startColor = availableColors[(int)series[i] % availableColors.Length];
+            
+            if (colorIsCategorical && numUniqueColors <= 9)
+            {
+                var c = (color[i] - 1.0f * colorMin);
+                points[i].startColor = VisualizationColors.Discrete[numUniqueColors][(int) c];
+            }
+            else
+            {
+                var c = (color[i] - 1.0f * colorMin) / (1.0f * colorMax - 1.0f * colorMin);
+                points[i].startColor = VisualizationColors.Rainbow(c);
+            }
             points[i].startSize = 0.03f;
         }
 
