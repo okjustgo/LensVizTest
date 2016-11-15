@@ -95,8 +95,11 @@ public class VoiceManager : MonoBehaviour
         //this.startQR();
         //Used for quick testing
         //this.startQR();
-        //this.createGraph("volcano.hgd");
-        this.showOptions();
+
+        //this.createGraph("Motor_Trend_Road_Tests.hgd");
+        this.createGraph("Price_of_Diamonds_by_Quality.hgd");
+        
+        //this.showOptions();
 
         // Tell the KeywordRecognizer about our keywords.
         keywordRecognizer = new KeywordRecognizer(keywords.Keys.ToArray());

@@ -2,17 +2,11 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Collections.Generic;
 using System.Text;
-using System.Collections;
-using System.Collections.Specialized;
-using System.Threading;
 using System.Linq;
 using UnityEngine.UI;
 using AzureUtil;
 using HoloGraph;
-
-using HoloToolkit.Unity;
 
 internal static class ExtensionMethods
 {
@@ -87,15 +81,13 @@ public class Graph : MonoBehaviour {
 
     private Quaternion prevRotation;
     private Vector3 prevPosition;
-
-
+    
     // The axis about which the object will rotate.
     private PivotAxis pivotAxis = PivotAxis.Free;
 
     // Overrides the cached value of the title's default rotation.
     public Quaternion titleDefaultRotation { get; private set; }
-
-
+    
     public static GameObject createGraph(string dataset)
     {
         var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
@@ -177,7 +169,8 @@ public class Graph : MonoBehaviour {
             var tooltipText = tooltip.transform.GetComponent<Text>();
             tooltipText.text = "";
             tooltipText.enabled = false;
-        } else
+        }
+        else
         {
             this.ClearMsgText(msgObj);
             var origin = new Vector3(-0.5f, -0.5f, -5);
@@ -209,10 +202,8 @@ public class Graph : MonoBehaviour {
 
         if (hadError)
         {
-
             hadError = false;
             this.SetMsgText("ERROR: " + errorMsg, false, statusObj);
-            
         }
 
         if (needToGetData && !string.IsNullOrEmpty(datasetToRender))
@@ -238,14 +229,14 @@ public class Graph : MonoBehaviour {
         var geometry = hgd.GetGeom();
 
         title.text = hgd.GetTitle();
-        xAxis.text = hgd.GetXAxisTitle();
-        yAxis.text = hgd.GetZAxisTitle();
-        zAxis.text = hgd.GetYAxisTitle();
+        xAxis.text = hgd.GetXAxisColumn();
+        yAxis.text = hgd.GetZAxisColumn();
+        zAxis.text = hgd.GetYAxisColumn();
 
         this.SetMsgText("Rendering...", true, statusObj);
 
         // initialize plot
-        if (geometry == "scatter")
+        if (geometry == "point")
         {
             ScatterPlot.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ(), hgd.GetSeries());
         }

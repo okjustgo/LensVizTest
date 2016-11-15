@@ -1,33 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AzureLib;
-using HoloGraph;
+﻿using AzureLib;
 using System.IO;
 
 namespace RHoloGraphTransfer
 {
     public class HoloGraphTransfer
     {
-        private AzureDataSync _azureConnection;
+        private readonly AzureDataSync _azureConnection;
 
         public HoloGraphTransfer(string connectionString, string containerName)
         {
             _azureConnection = new AzureDataSync(connectionString, containerName);
         }
 
-        public void UploadCsvAsHgd(string csvPath, string hgdFilename, string plotTitle, string geom, string aes)
+        public void UploadCsvAsHgd(string tsvPath, string columnTypes, string geom = null, string xAxis = null, string yAxis = null, string zAxis = null, string color = null)
         {
-            var hgd = new HoloGraphData();
+            var hgd = new HoloGraphData.HoloGraphData();
 
-            hgd.ReadDataFromCSV(csvPath, aes);
-            hgd.CreateAndSetHeader(plotTitle, geom);
+            var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tsvPath);
+            hgd.ReadDataFromTsv(tsvPath, columnTypes);
+            hgd.CreateAndSetViewHeader(fileNameWithoutExtension, geom, xAxis, yAxis, zAxis, color);
 
             Stream dataStream = new MemoryStream();
             hgd.ToStream(ref dataStream);
             dataStream.Seek(0, SeekOrigin.Begin);
 
+            var hgdFilename = string.Format("{0}.hgd", fileNameWithoutExtension.Replace(" ", "_"));
             _azureConnection.Upload(hgdFilename, dataStream);
         }
     }
