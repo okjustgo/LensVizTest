@@ -226,19 +226,19 @@ public class Graph : MonoBehaviour {
 
     private void renderGraph()
     {
-        var geometry = hgd.GetGeom();
+        var geometry = hgd.Geometry;
 
-        title.text = hgd.GetTitle();
-        xAxis.text = hgd.GetXAxisColumn();
-        yAxis.text = hgd.GetZAxisColumn();
-        zAxis.text = hgd.GetYAxisColumn();
+        title.text = hgd.Title;
+        xAxis.text = hgd.Aesthetics["x"];
+        yAxis.text = hgd.Aesthetics["y"];
+        zAxis.text = hgd.Aesthetics["z"];
 
         this.SetMsgText("Rendering...", true, statusObj);
 
         // initialize plot
         if (geometry == "point")
         {
-            ScatterPlot.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ(), hgd.GetSeries());
+            ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"));
         }
         if (geometry == "bar")
         {
@@ -260,7 +260,7 @@ public class Graph : MonoBehaviour {
             //    }
             //}
 
-            BarGraph.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ());
+            BarGraph.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"));
         }
         if (geometry == "surface")
         {
@@ -283,7 +283,7 @@ public class Graph : MonoBehaviour {
             //    }
             //}
 
-            SurfaceChart.Render(gameObject, hgd.GetX(), hgd.GetY(), hgd.GetZ());
+            SurfaceChart.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"));
         }
         if (geometry == "radartube")
         {

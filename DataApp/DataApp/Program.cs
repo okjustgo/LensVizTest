@@ -16,13 +16,11 @@ namespace DataApp
             var connection = ConfigurationManager.AppSettings["StorageConnectionString"];
             var ht = new HoloGraphTransfer(connection, "holograph");
             
-            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Motor Trend Road Tests.tsv", "float;float;float;float;float;float;float;string;float;float", "point", "MilesPerGallon", "GrossHorsepower", "Displacement", "NumberOfCylinders");
-            CheckFile("Motor_Trend_Road_Tests.hgd");
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Fuel Economy.tsv", "string;string;float;float;float;string;string;float;float;string", "point", "HighwayMpg", "DisplacementInLiters", "Year", "NumberOfCylinders");
+            CheckFile("Fuel_Economy.hgd");
 
-            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Price of Diamonds by Quality.tsv", "float;float;string;string;string;float;float;float;float;float", "bar", "Cut", "Clarity", "Price", "Carat");
+            ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\Price of Diamonds by Quality.tsv", "float;float;string;string;string;float;float;float;float;float", "point", "Carat", "Clarity", "Price", "Quality");
             CheckFile("Price_of_Diamonds_by_Quality.hgd");
-
-            //ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\diamonds.tsv", "diamonds.hgd", "Price of Diamonds By Quality", "bar", "x;y;z;series");
 
             //ht.UploadCsvAsHgd(@"C:\Users\kerussel\Desktop\volcano.tsv", "volcano.hgd", "Maunga Whau Volcano", "surface", "x;y;z;series");
 

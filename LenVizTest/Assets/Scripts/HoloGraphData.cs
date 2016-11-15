@@ -8,94 +8,123 @@ namespace HoloGraph
 {
     public class HoloGraphData
     {
-        private object _viewJson;
-        private object _schemaJson;
-        private object _mappingJson;
-        private int _numCols;
-        private List<string> _columnNames;
-        private List<string> _columnTypes;
-        
+        // Data properties
+        public float[][] Data { get; set; }
+        public Dictionary<string, List<string>> Mappings { get; private set; }
+        public int NumCols { get; private set; }
+        public List<string> ColumnNames { get; private set; }
+        public List<string> ColumnTypes { get; private set; }
+
+        // View properties
+        public string Title { get; private set; }
+        public string Geometry { get; private set; }
+        public Dictionary<string, string> Aesthetics { get; private set; }
+        public string Statistic { get; private set; }
+
+        // JSON strings for inspection
+        public string ViewJson { get { return PackViewJson(); } }
+        public string SchemaJson { get { return PackSchemaJson(); } }
+        public string MappingJson { get { return PackMappingJson(); } }
+
+
         public HoloGraphData()
         {
-            _viewJson = new object();
-            _schemaJson = new object();
-            _mappingJson = new object();
-        }
+            NumCols = 0;
+            ColumnNames = new List<string>();
+            ColumnTypes = new List<string>();
+            Mappings = new Dictionary<string, List<string>>();
 
-        public HoloGraphData(object view, object schema, object mapping, float[][] data)
-        {
-            if (view == null)
-            {
-                throw new ArgumentNullException("view");
-            }
-            if (schema == null)
-            {
-                throw new ArgumentNullException("schema");
-            }
-            if (mapping == null)
-            {
-                throw new ArgumentNullException("mapping");
-            }
-            if (data == null)
-            {
-                throw new ArgumentNullException("data");
-            }
-            _viewJson = view;
-            _schemaJson = schema;
-            _mappingJson = mapping;
-            Data = data;
+            Title = string.Empty;
+            Geometry = string.Empty;
+            Aesthetics = new Dictionary<string, string>();
+            Statistic = string.Empty;
         }
 
         public HoloGraphData(Stream s)
         {
-            _viewJson = Json.Deserialize(ReadJsonString(s));
-            _schemaJson = Json.Deserialize(ReadJsonString(s));
-            _mappingJson = Json.Deserialize(ReadJsonString(s));
+            var view = ReadJsonString(s);
+            var schema = ReadJsonString(s);
+            var mapping = ReadJsonString(s);
 
-            var h = (Dictionary<string, object>)_schemaJson;
-            _numCols = int.Parse(h["numCols"].ToString());
-            var names = (List<object>)h["colNames"];
-            var types = (List<object>)h["colTypes"];
-            if (_numCols != names.Count || _numCols != types.Count)
-            {
-                throw new ArgumentException(string.Format("Stream indicated {0} columns, but names or types had incorrect number of columns.", _numCols));
-            }
-
-            _columnNames = new List<string>();
-            _columnTypes = new List<string>();
-            for (var i = 0; i < _numCols; i++)
-            {
-                _columnNames.Add(names[i].ToString());
-                _columnTypes.Add(types[i].ToString());
-            }
+            UnpackViewJson(view);
+            UnpackSchemaJson(schema);
+            UnpackMappingJson(mapping);
 
             var list = new List<float[]>();
             while (s.Position < s.Length)
             {
                 // create a second float array and copy the bytes into it...
-                var floatRow = new float[_numCols];
-                var byteRow = new byte[_numCols * 4];
-                s.Read(byteRow, 0, _numCols * 4);
+                var floatRow = new float[NumCols];
+                var byteRow = new byte[NumCols * sizeof(float)];
+                s.Read(byteRow, 0, NumCols * sizeof(float));
                 Buffer.BlockCopy(byteRow, 0, floatRow, 0, byteRow.Length);
                 list.Add(floatRow);
             }
             Data = list.ToArray();
         }
 
-        public string GetSchemaDictionaryJson(int numCols, List<string> columnNames, List<string> columnTypes)
+        public string PackViewJson()
         {
-            if (numCols != columnNames.Count || numCols != columnTypes.Count)
+            var str = string.Format("'title': '{0}',", Title);
+            str += string.IsNullOrEmpty(Geometry) ? string.Empty : string.Format("'geom': '{0}',", Geometry);
+            str += string.IsNullOrEmpty(Statistic) ? string.Empty : string.Format("'stat': '{0}',", Statistic);
+            foreach (var aes in Aesthetics)
+            {
+                str += string.Format("'{0}': '{1}',", aes.Key, aes.Value);
+            }
+            str = str.TrimEnd(',');
+            str = str.Replace('\'', '\"');
+            return Json.Serialize(Json.Deserialize("{" + str + "}"));
+        }
+
+        public void UnpackViewJson(string viewJson)
+        {
+            var v = (Dictionary<string, object>)Json.Deserialize(viewJson);
+            Title = v.ContainsKey("title") ? (string)v["title"] : string.Empty;
+            Geometry = v.ContainsKey("geom") ? (string)v["geom"] : string.Empty;
+            Statistic = v.ContainsKey("stat") ? (string)v["stat"] : string.Empty;
+
+            Aesthetics = new Dictionary<string, string>();
+            if (v.ContainsKey("x"))
+            {
+                Aesthetics["x"] = (string)v["x"];
+            }
+            if (v.ContainsKey("y"))
+            {
+                Aesthetics["y"] = (string)v["y"];
+            }
+            if (v.ContainsKey("z"))
+            {
+                Aesthetics["z"] = (string)v["z"];
+            }
+            if (v.ContainsKey("color"))
+            {
+                Aesthetics["color"] = (string)v["color"];
+            }
+            if (v.ContainsKey("size"))
+            {
+                Aesthetics["size"] = (string)v["size"];
+            }
+            if (v.ContainsKey("shape"))
+            {
+                Aesthetics["shape"] = (string)v["shape"];
+            }
+        }
+
+        public string PackSchemaJson()
+        {
+            if (NumCols != ColumnNames.Count || NumCols != ColumnTypes.Count)
             {
                 throw new ArgumentException("columnNames and columnTypes have different lengths.");
             }
 
-            var numColsJson = string.Format("\"numCols\":{0}", _numCols);
+            var numColsJson = string.Format("\"numCols\":{0}", NumCols);
             var colNamesJson = string.Empty;
             var colTypesJson = string.Empty;
-            for (var i = 0; i < numCols; i++)
+            for (var i = 0; i < NumCols; i++)
             {
-                colNamesJson += string.Format("\"{0}\",", columnNames[i]);
-                colTypesJson += string.Format("\"{0}\",", columnTypes[i]);
+                colNamesJson += string.Format("\"{0}\",", ColumnNames[i]);
+                colTypesJson += string.Format("\"{0}\",", ColumnTypes[i]);
             }
             colNamesJson = colNamesJson.TrimEnd(',');
             colTypesJson = colTypesJson.TrimEnd(',');
@@ -103,10 +132,30 @@ namespace HoloGraph
             return Json.Serialize(Json.Deserialize(string.Format("{{{0}, \"colNames\":[{1}], \"colTypes\":[{2}]}}", numColsJson, colNamesJson, colTypesJson))); //RoundTrip the json to ensure proper format. TODO: remove in production
         }
 
-        public static string GetMappingDictionaryJson(Dictionary<string, List<string>> mappings)
+        public void UnpackSchemaJson(string schemaJson)
+        {
+            var schema = (Dictionary<string, object>)Json.Deserialize(schemaJson);
+            NumCols = int.Parse(schema["numCols"].ToString());
+            var names = (List<object>)schema["colNames"];
+            var types = (List<object>)schema["colTypes"];
+            if (NumCols != names.Count || NumCols != types.Count)
+            {
+                throw new ArgumentException(string.Format("Stream indicated {0} columns, but names or types had incorrect number of columns.", NumCols));
+            }
+
+            ColumnNames = new List<string>();
+            ColumnTypes = new List<string>();
+            for (var i = 0; i < NumCols; i++)
+            {
+                ColumnNames.Add(names[i].ToString());
+                ColumnTypes.Add(types[i].ToString());
+            }
+        }
+
+        public string PackMappingJson()
         {
             var mappingJson = string.Empty;
-            foreach (var series in mappings)
+            foreach (var series in Mappings)
             {
                 var name = series.Key;
                 var map = series.Value;
@@ -124,25 +173,21 @@ namespace HoloGraph
             return Json.Serialize(Json.Deserialize(string.Format("{{{0}}}", mappingJson))); //RoundTrip the json to ensure proper format. TODO: remove in production
         }
 
-        public float[][] Data { get; set; }
-
-        public string ViewJson
+        public void UnpackMappingJson(string mappingJson)
         {
-            get { return Json.Serialize(_viewJson); }
-            set { _viewJson = Json.Deserialize(value); }
+            var map = (Dictionary<string, object>)Json.Deserialize(mappingJson);
+            Mappings = new Dictionary<string, List<string>>();
+            foreach (var m in map)
+            {
+                Mappings[m.Key] = new List<string>();
+                var items = (List<object>)m.Value;
+                foreach (var item in items)
+                {
+                    Mappings[m.Key].Add(item.ToString());
+                }
+            }
         }
 
-        public string SchemaJson
-        {
-            get { return Json.Serialize(_schemaJson); }
-            set { _schemaJson = Json.Deserialize(value); }
-        }
-
-        public string MappingJson
-        {
-            get { return Json.Serialize(_mappingJson); }
-            set { _mappingJson = Json.Deserialize(value); }
-        }
 
         public Stream ToStream(ref Stream s)
         {
@@ -184,18 +229,27 @@ namespace HoloGraph
         }
 
         // Expects ReadDataFromCSV to be called already so column names and order already known
-        public void CreateAndSetViewHeader(string title, string geom = null, string xAxis = null, string yAxis = null, string zAxis = null, string color = null)
+        public void SetViewProperties(string title, string geom = null, string xAxis = null, string yAxis = null, string zAxis = null, string color = null, string stat = null)
         {
-            var str = string.Format(@"{{
-                'title': '{0}',
-                'geom': '{1}',
-                'x': '{2}',
-                'y': '{3}',
-                'z': '{4}',
-                'color': '{5}'
-            }}", title, geom, xAxis, yAxis, zAxis, color);
-            str = str.Replace('\'', '\"');
-            ViewJson = str;
+            Title = title;
+            Geometry = geom;
+            Statistic = stat;
+            if (xAxis != null)
+            {
+                Aesthetics["x"] = xAxis;
+            }
+            if (yAxis != null)
+            {
+                Aesthetics["y"] = yAxis;
+            }
+            if (zAxis != null)
+            {
+                Aesthetics["z"] = zAxis;
+            }
+            if (color != null)
+            {
+                Aesthetics["color"] = color;
+            }
         }
 
         public void ReadDataFromTsv(string fileName, string columnTypes)
@@ -206,23 +260,23 @@ namespace HoloGraph
             var readLine = reader.ReadLine();
             if (readLine != null)
             {
-                var mappings = new Dictionary<string, List<string>>();
+                Mappings = new Dictionary<string, List<string>>();
                 var headers = readLine.Trim().Split('\t');
                 var columnNames = new string[headers.Length];
                 for (var i = 0; i < headers.Length; i++)
                 {
                     columnNames[i] = headers[i].Trim('"');
                 }
-                _columnNames = new List<string>(columnNames);
-                _numCols = headers.Length;
+                ColumnNames = new List<string>(columnNames);
+                NumCols = headers.Length;
 
                 var s = columnTypes.Split(';');
-                if (s.Length != _numCols)
+                if (s.Length != NumCols)
                 {
                     throw new ArgumentException("columnTypes did not have the same number of types as there are columns in the data.");
                 }
-                var types = new string[_numCols];
-                for (var i = 0; i < _numCols; i++)
+                var types = new string[NumCols];
+                for (var i = 0; i < NumCols; i++)
                 {
                     switch (s[i])
                     {
@@ -232,13 +286,13 @@ namespace HoloGraph
                             break;
                         case "string":
                             types[i] = s[i];
-                            mappings[s[i]] = new List<string>();
+                            Mappings[ColumnNames[i]] = new List<string>();
                             break;
                         default:
                             throw new ArgumentException(string.Format("Column type '{0}' unsupported.", s[i]));
                     }
                 }
-                _columnTypes = new List<string>(types);
+                ColumnTypes = new List<string>(types);
 
                 while (!reader.EndOfStream)
                 {
@@ -248,24 +302,25 @@ namespace HoloGraph
                         throw new Exception("End of stream not found, but read a null line...");
                     }
                     var row = readLine.Trim().Split('\t');
-                    if (row.Length != _numCols)
+                    if (row.Length != NumCols)
                     {
                         throw new ArgumentException("Data does not have enough columns.");
                     }
 
-                    var dataRow = new float[_numCols];
-                    for (var i = 0; i < _numCols; i++)
+                    var dataRow = new float[NumCols];
+                    for (var i = 0; i < NumCols; i++)
                     {
-                        var type = _columnTypes[i];
+                        var type = ColumnTypes[i];
                         if (type == "string")
                         {
-                            var colName = _columnNames[i];
-                            if (!mappings[colName].Contains(row[i]))
+                            var colName = ColumnNames[i];
+                            var value = row[i].Trim('"').Replace("\"", "_");
+                            if (!Mappings[colName].Contains(value))
                             {
-                                mappings[colName].Add(row[i]);
+                                Mappings[colName].Add(value);
                             }
 
-                            dataRow[i] = mappings[colName].IndexOf(row[i]);
+                            dataRow[i] = Mappings[colName].IndexOf(value);
                         }
                         else
                         {
@@ -275,9 +330,6 @@ namespace HoloGraph
 
                     dataList.Add(dataRow);
                 }
-
-                MappingJson = GetMappingDictionaryJson(mappings); //TODO: Inefficent
-                SchemaJson = GetSchemaDictionaryJson(_numCols, _columnNames, _columnTypes);
             }
 
             Data = dataList.ToArray();
@@ -285,87 +337,18 @@ namespace HoloGraph
 
         public int GetColumnIndex(string columnName)
         {
-            return _columnNames.IndexOf(columnName);
+            return ColumnNames.IndexOf(columnName);
         }
 
-        public float[] GetX()
+        public float[] GetData(string aestheticName)
         {
-            var idx = GetColumnIndex(GetXAxisColumn());
-            var x = new float[Data.Length];
+            var idx = GetColumnIndex(Aesthetics[aestheticName]);
+            var d = new float[Data.Length];
             for (var i = 0; i < Data.Length; i++)
             {
-                x[i] = Data[i][idx];
+                d[i] = Data[i][idx];
             }
-            return x;
-        }
-
-        public float[] GetY()
-        {
-            var idx = GetColumnIndex(GetYAxisColumn());
-            var y = new float[Data.Length];
-            for (var i = 0; i < Data.Length; i++)
-            {
-                y[i] = Data[i][idx];
-            }
-            return y;
-        }
-
-        public float[] GetZ()
-        {
-            var idx = GetColumnIndex(GetZAxisColumn());
-            var z = new float[Data.Length];
-            for (var i = 0; i < Data.Length; i++)
-            {
-                z[i] = Data[i][idx];
-            }
-            return z;
-        }
-
-        public float[] GetSeries()
-        {
-            var idx = GetColumnIndex(GetColorColumn());
-            var s = new float[Data.Length];
-            for (var i = 0; i < Data.Length; i++)
-            {
-                s[i] = Data[i][idx];
-            }
-            return s;
-        }
-
-        public string GetTitle()
-        {
-            var h = (Dictionary<string, object>)_viewJson;
-            return (string)h["title"];
-        }
-
-        public string GetXAxisColumn()
-        {
-            var h = (Dictionary<string, object>)_viewJson;
-            return (string)h["x"];
-        }
-
-        public string GetYAxisColumn()
-        {
-            var h = (Dictionary<string, object>)_viewJson;
-            return (string)h["y"];
-        }
-
-        public string GetZAxisColumn()
-        {
-            var h = (Dictionary<string, object>)_viewJson;
-            return (string)h["z"];
-        }
-
-        public string GetColorColumn()
-        {
-            var h = (Dictionary<string, object>)_viewJson;
-            return (string)h["color"];
-        }
-
-        public string GetGeom()
-        {
-            var h = (Dictionary<string, object>)_viewJson;
-            return (string)h["geom"];    // TODO: 'type' is really overloaded term, use "geom" instead
+            return d;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace RHoloGraphTransfer
 
             var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(tsvPath);
             hgd.ReadDataFromTsv(tsvPath, columnTypes);
-            hgd.CreateAndSetViewHeader(fileNameWithoutExtension, geom, xAxis, yAxis, zAxis, color);
+            hgd.SetViewProperties(fileNameWithoutExtension, geom, xAxis, yAxis, zAxis, color);
 
             Stream dataStream = new MemoryStream();
             hgd.ToStream(ref dataStream);
