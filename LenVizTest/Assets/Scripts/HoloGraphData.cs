@@ -18,6 +18,7 @@ namespace HoloGraph
         // View properties
         public string Title { get; private set; }
         public string Geometry { get; private set; }
+        public static List<string> SupportedAesthetics = new List<string> {"x", "y", "z", "color"};
         public Dictionary<string, string> Aesthetics { get; private set; }
         public string Statistic { get; private set; }
 
@@ -85,29 +86,12 @@ namespace HoloGraph
             Statistic = v.ContainsKey("stat") ? (string)v["stat"] : string.Empty;
 
             Aesthetics = new Dictionary<string, string>();
-            if (v.ContainsKey("x"))
+            foreach (var aes in SupportedAesthetics)
             {
-                Aesthetics["x"] = (string)v["x"];
-            }
-            if (v.ContainsKey("y"))
-            {
-                Aesthetics["y"] = (string)v["y"];
-            }
-            if (v.ContainsKey("z"))
-            {
-                Aesthetics["z"] = (string)v["z"];
-            }
-            if (v.ContainsKey("color"))
-            {
-                Aesthetics["color"] = (string)v["color"];
-            }
-            if (v.ContainsKey("size"))
-            {
-                Aesthetics["size"] = (string)v["size"];
-            }
-            if (v.ContainsKey("shape"))
-            {
-                Aesthetics["shape"] = (string)v["shape"];
+                if (v.ContainsKey(aes))
+                {
+                    Aesthetics[aes] = (string)v[aes];
+                }
             }
         }
 
