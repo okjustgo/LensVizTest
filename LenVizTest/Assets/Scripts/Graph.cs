@@ -168,7 +168,7 @@ public class Graph : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        updateTitlePivotAxis();
+        UpdateTitlePivotAxis();
         UpdateLegendPivotAxis();
         
         if (this.gameObject.GetComponent<GraphMover>().placing)
@@ -238,8 +238,8 @@ public class Graph : MonoBehaviour {
 
         title.text = hgd.Title;
         xAxis.text = hgd.Aesthetics["x"];
-        yAxis.text = hgd.Aesthetics["z"]; 
-        zAxis.text = hgd.Aesthetics["y"];
+        yAxis.text = hgd.Aesthetics["y"];
+        zAxis.text = hgd.Aesthetics["z"]; 
 
         this.SetMsgText("Rendering...", true, statusObj);
 
@@ -345,7 +345,7 @@ public class Graph : MonoBehaviour {
     }
 
     // Keeps the title facing the camera.
-    private void updateTitlePivotAxis()
+    private void UpdateTitlePivotAxis()
     {
         // Get a Vector that points from the Camera to the target.
         Vector3 directionToTarget = Camera.main.transform.position - title.transform.position;
@@ -380,7 +380,7 @@ public class Graph : MonoBehaviour {
     private void UpdateLegendPivotAxis()
     {
         // Get a Vector that points from the Camera to the target.
-        Vector3 directionToTarget = Camera.main.transform.position - legend.transform.position;
+        var directionToTarget = Camera.main.transform.position - legend.transform.position;
 
         // If we are right next to the camera the rotation is undefined.
         if (directionToTarget.sqrMagnitude < Mathf.Epsilon)
@@ -396,7 +396,7 @@ public class Graph : MonoBehaviour {
                 break;
 
             case PivotAxis.Y:
-                directionToTarget.y = legend.transform.position.y;
+                
                 break;
 
             case PivotAxis.Free:

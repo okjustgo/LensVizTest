@@ -84,7 +84,7 @@ public class ScatterPlot : MonoBehaviour
             float yVal = (y[i] - 1.0f*yMin) / (1.0f * yMax - 1.0f * yMin) - 0.5f;
             float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin) - 0.5f;
             // Flip Z and Y so Z values scale vertically.
-            var position = new Vector3(parentScale.x * xVal, parentScale.z * zVal, parentScale.y * yVal);
+            var position = new Vector3(parentScale.x * xVal, parentScale.y * yVal, parentScale.z * zVal);
             points[i].position = parentRotation * position + parentPosition;
             
             if (categoryLabels != null && numUniqueColors >= 1 && numUniqueColors <= VisualizationColors.Discrete.Keys.Count)
