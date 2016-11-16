@@ -66,13 +66,13 @@ public class Graph : MonoBehaviour {
     }
 
     public string datasetToRender;
+    public HoloGraphData hgd;
+    public bool shouldRender = false;
     private bool needToGetData = true;
-    private bool shouldRender = false;
     private bool hadError = false;
     private int errorCode = 0;
     private string errorMsg = "";
     private float[,] data;
-    private HoloGraphData hgd;
     private Text title;
     private Text xAxis;
     private Text yAxis;
@@ -97,6 +97,7 @@ public class Graph : MonoBehaviour {
         var graph = Instantiate(graphPrefab);
         graph.SendMessage("OnSelect");
         graph.GetComponent<Graph>().datasetToRender = dataset;
+        graph.GetComponentInChildren<Transform>().Find("AesPanel").gameObject.GetComponent<AesPanel>().Graph = graph;
         return graph;
         //graph.transform.parent = gameObject.transform;
     }

@@ -110,7 +110,7 @@ public class ScatterPlot : MonoBehaviour
             {
                 var c = VisualizationColors.Discrete[numUniqueColors][i];
                 var label = categoryLabels[i];
-                legendText += string.Format("<size=4><color=#{0}>{1}</size></color>\n</size>", VisualizationColors.ColorToHex(c), label);
+                legendText += string.Format("<size=4><color=#{0}>{1}</color>\n</size>", VisualizationColors.ColorToHex(c), label);
             }
         }
         else
