@@ -103,14 +103,14 @@ public class ScatterPlot : MonoBehaviour
         particles.SetParticles(points, numPoints);
 
         // Create legend text.
-        var legendText = string.Format("<color=white><b>{0}:</b></color>\n", legendLabel);
+        var legendText = string.Format("<size=7><color=white><b> {0}:</b></color>\n</size>", legendLabel);
         if (categoryLabels != null && numUniqueColors >= 1 && numUniqueColors <= VisualizationColors.Discrete.Keys.Count)
         {
             for (var i = 0; i < numUniqueColors; i++)
             {
                 var c = VisualizationColors.Discrete[numUniqueColors][i];
                 var label = categoryLabels[i];
-                legendText += string.Format("<size=4><color=#{0}>{1}</color>\n</size>", VisualizationColors.ColorToHex(c), label);
+                legendText += string.Format("<size=7>    <color=#{0}>{1}</color>\n</size>", VisualizationColors.ColorToHex(c), label);
             }
         }
         else
@@ -119,7 +119,7 @@ public class ScatterPlot : MonoBehaviour
             for (var i = (int)levels; i >= 0; i--)
             {
                 var c = VisualizationColors.Rainbow(i/levels);
-                legendText += string.Format("<size=4><color=#{0}>@{1}</color>\n</size>", VisualizationColors.ColorToHex(c), i == (int)levels ? " - High" : i == 0 ? " - Low" : string.Empty);
+                legendText += string.Format("<size=7>    <color=#{0}>@{1}</color>\n</size>", VisualizationColors.ColorToHex(c), i == (int)levels ? " - High" : i == 0 ? " - Low" : string.Empty);
             }
         }
         return legendText;

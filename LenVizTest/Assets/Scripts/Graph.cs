@@ -77,7 +77,8 @@ public class Graph : MonoBehaviour {
     private Text xAxis;
     private Text yAxis;
     private Text zAxis;
-    private Text legend;
+    private Text legendText;
+    private Canvas legend;
     private GameObject tooltipPrefab, tooltip, msgObj, statusObj;
 
     private Quaternion prevRotation;
@@ -118,7 +119,8 @@ public class Graph : MonoBehaviour {
         xAxis = gameObject.GetComponentInChildren<Transform>().Find("Canvas/XAxis").gameObject.GetComponent<Text>();
         yAxis = gameObject.GetComponentInChildren<Transform>().Find("Canvas/YAxis").gameObject.GetComponent<Text>();
         zAxis = gameObject.GetComponentInChildren<Transform>().Find("Canvas/ZAxis").gameObject.GetComponent<Text>();
-        legend = gameObject.GetComponentInChildren<Transform>().Find("Legend/LegendText").gameObject.GetComponent<Text>();
+        legend = gameObject.GetComponentInChildren<Transform>().Find("Legend").gameObject.GetComponent<Canvas>();
+        legendText = legend.GetComponentInChildren<Transform>().Find("LegendText").gameObject.GetComponent<Text>();
 
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
         tooltip = Instantiate(tooltipPrefab);
@@ -247,7 +249,7 @@ public class Graph : MonoBehaviour {
         if (geometry == "point")
         {
             var colorIsCategorical = hgd.Mappings.ContainsKey(hgd.Aesthetics["color"]);
-            legend.text = ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"), hgd.Aesthetics["color"], colorIsCategorical ? hgd.Mappings[hgd.Aesthetics["color"]] : null);
+            legendText.text = ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"), hgd.Aesthetics["color"], colorIsCategorical ? hgd.Mappings[hgd.Aesthetics["color"]] : null);
         }
         if (geometry == "bar")
         {
@@ -407,7 +409,7 @@ public class Graph : MonoBehaviour {
 
         // Calculate and apply the rotation required to reorient the object and apply the default rotation to the result.
         legend.transform.rotation = Quaternion.LookRotation(-directionToTarget) * legendDefaultRotation;
-        legend.transform.position = ((Quaternion.LookRotation(-directionToTarget) * legendDefaultRotation) * (0.85f * Vector3.right)) + transform.position + (new Vector3(0.0f, -0.2f, 0.0f));
+        legend.transform.position = ((Quaternion.LookRotation(-directionToTarget) * legendDefaultRotation) * (0.85f * Vector3.right)) + transform.position + (new Vector3(0.0f, 0.2f, 0.0f));
     }
 
     public void GetDataFromAzure(string containerName, string blobName)
