@@ -20,10 +20,6 @@ public class MenuTap : MonoBehaviour {
         var dropDown = gameObject.GetComponent<Dropdown>();
         dropDown.Show();
 
-        var template = dropDown.template;
-        var canvas = template.GetComponent<Canvas>();
-        canvas.sortingOrder = 0;
-        var canvas2 = template.GetComponent<Canvas>().rootCanvas;
         var dropList = gameObject.transform.FindChild("Dropdown List");
         var canvas3 = dropList.GetComponent<Canvas>();
         canvas3.sortingOrder = 0;
