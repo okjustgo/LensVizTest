@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.VR.WSA.Input;
 
 namespace HoloToolkit.Unity
@@ -451,7 +452,10 @@ namespace HoloToolkit.Unity
         {
             if (FocusedObject != null)
             {
+                //Added this to play nice with selectable
+                var eventData = new BaseEventData(EventSystem.current); 
                 FocusedObject.SendMessage("OnSelect", SendMessageOptions.DontRequireReceiver);
+                FocusedObject.SendMessage("OnPointerClick",new PointerEventData(EventSystem.current), SendMessageOptions.DontRequireReceiver);
             }
         }
 

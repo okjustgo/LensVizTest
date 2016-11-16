@@ -28,7 +28,8 @@ public class VoiceManager : MonoBehaviour
     {
         messagePrefab = Resources.Load(@"Message", typeof(GameObject)) as GameObject;
         message = Instantiate(messagePrefab);
-        message.transform.parent = GameObject.Find("Canvas").transform;
+        message.SetActive(false);
+        message.transform.parent = GameObject.Find("Options").transform;
         
         keywords.Add("Show options", () =>
          {
@@ -96,7 +97,7 @@ public class VoiceManager : MonoBehaviour
         //Used for quick testing
         //this.startQR();
 
-        this.createGraph("Fuel_Economy.hgd");
+        //this.createGraph("Fuel_Economy.hgd");
         //this.createGraph("Price_of_Diamonds_by_Quality.hgd");
         
         //this.showOptions();

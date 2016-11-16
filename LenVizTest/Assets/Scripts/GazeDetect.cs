@@ -6,6 +6,7 @@ public class GazeDetect : MonoBehaviour
 {
 
     public bool isAnchor;
+    public bool isMenu;
 
     // Use this for initialization
     void Start()
@@ -45,6 +46,10 @@ public class GazeDetect : MonoBehaviour
         GameObject myEventSystem = GameObject.Find("EventSystem");
         myEventSystem.GetComponent<UnityEngine.EventSystems.EventSystem>().SetSelectedGameObject(null);
 
+        if (!isMenu) {
+            return;
+        }
+
         if (!isAnchor)
         {
             this.transform.parent.parent.SendMessage("OnGazeLeave");
@@ -68,14 +73,14 @@ public class GazeDetect : MonoBehaviour
                 }
             }
 
-            if (foundChart)
-            {
-                Debug.Log("Found Chart " + this.name);
-            }
-            else
-            {
-                Debug.Log("Not Found Chart" + this.name);
-            }
+            //if (foundChart)
+            //{
+            //    Debug.Log("Found Chart " + this.name);
+            //}
+            //else
+            //{
+            //    Debug.Log("Not Found Chart" + this.name);
+            //}
 
             if (!foundChart)
             {
