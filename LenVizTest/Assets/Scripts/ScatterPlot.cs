@@ -110,7 +110,7 @@ public class ScatterPlot : MonoBehaviour
             {
                 var c = VisualizationColors.Discrete[numUniqueColors][i];
                 var label = categoryLabels[i];
-                legendText += string.Format("<color=#{0}>{1}</color>\n", VisualizationColors.ColorToHex(c), label);
+                legendText += string.Format("<size=4><color=#{0}>{1}</size></color>\n</size>", VisualizationColors.ColorToHex(c), label);
             }
         }
         else
@@ -119,7 +119,7 @@ public class ScatterPlot : MonoBehaviour
             for (var i = (int)levels; i >= 0; i--)
             {
                 var c = VisualizationColors.Rainbow(i/levels);
-                legendText += string.Format("<color=#{0}><b>@{1}</b></color>\n", VisualizationColors.ColorToHex(c), i == (int)levels ? " - High" : i == 0 ? " - Low" : string.Empty);
+                legendText += string.Format("<size=4><color=#{0}>@{1}</color>\n</size>", VisualizationColors.ColorToHex(c), i == (int)levels ? " - High" : i == 0 ? " - Low" : string.Empty);
             }
         }
         return legendText;

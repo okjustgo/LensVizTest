@@ -28,12 +28,15 @@ namespace Assets.Scripts
         {
             if (level <= 0.0f)
             {
-                level = 0.0001f;
+                level = 0.0f;
             }
             if (level >= 1.0f)
             {
                 level = 1.0f;
             }
+
+            // HSV wraps around from red to red, so make it so range isn't fully [0, 1]
+            level = level/1.1f;
 
             return Color.HSVToRGB(level, 1.0f, 1.0f);
         }
