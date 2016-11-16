@@ -40,18 +40,17 @@ namespace Assets.Scripts
 
         public static Color HexToColor(string hex)
         {
-            hex = hex.Replace("0x", "");//in case the string is formatted 0xFFFFFF
-            hex = hex.Replace("#", "");//in case the string is formatted #FFFFFF
-            byte a = 255;//assume fully visible unless specified in hex
-            var r = byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-            var g = byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-            var b = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-            //Only use alpha if the string has enough characters
-            if (hex.Length == 8)
+            var color = new Color();
+            if (!ColorUtility.TryParseHtmlString(hex, out color))
             {
-                a = byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+                throw new ArgumentException(string.Format("'{0}' is not a hex color"));
             }
-            return new Color32(r, g, b, a);
+            return color;
+        }
+
+        public static string ColorToHex(Color color)
+        {
+            return ColorUtility.ToHtmlStringRGB(color);
         }
     }
 }

@@ -77,7 +77,7 @@ namespace HoloGraph
 
             Aesthetics[aesthetic] = columnName;
         }
-
+        
         public string PackViewJson()
         {
             var str = string.Format("'title': '{0}',", Title);
@@ -185,7 +185,6 @@ namespace HoloGraph
                 }
             }
         }
-
 
         public Stream ToStream(ref Stream s)
         {

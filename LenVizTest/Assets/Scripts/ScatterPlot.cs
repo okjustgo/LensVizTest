@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System;
 using Assets.Scripts;
+using System.Collections.Generic;
 
 public class ScatterPlot : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class ScatterPlot : MonoBehaviour
     {
     }
 
-    public static void Render(GameObject gameObject, float[] x, float[] y, float[] z, float[] color, bool colorIsCategorical = false)
+    public static string Render(GameObject gameObject, float[] x, float[] y, float[] z, float[] color, string legendLabel = null, List<string> categoryLabels = null)
     {
         if(!(x.Length == y.Length && y.Length == z.Length && z.Length == color.Length))
         {
@@ -81,24 +82,46 @@ public class ScatterPlot : MonoBehaviour
             // Scale point to range [0, 1].
             float xVal = (x[i] - 1.0f*xMin) / (1.0f * xMax - 1.0f * xMin) - 0.5f;
             float yVal = (y[i] - 1.0f*yMin) / (1.0f * yMax - 1.0f * yMin) - 0.5f;
-            float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin) - 0.5f;
+            float zVal = (1.0f - (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin)) - 0.5f;
             // Flip Z and Y so Z values scale vertically.
             var position = new Vector3(parentScale.x * xVal, parentScale.z * zVal, parentScale.y * yVal);
             points[i].position = parentRotation * position + parentPosition;
             
-            if (colorIsCategorical && numUniqueColors <= 9)
+            if (categoryLabels != null && numUniqueColors >= 1 && numUniqueColors <= VisualizationColors.Discrete.Keys.Count)
             {
                 var c = (color[i] - 1.0f * colorMin);
                 points[i].startColor = VisualizationColors.Discrete[numUniqueColors][(int) c];
             }
             else
             {
-                var c = (color[i] - 1.0f * colorMin) / (1.0f * colorMax - 1.0f * colorMin);
+                var c = (color[i] - 1.0f * colorMin) / (1.1f * (1.0f * colorMax - 1.0f * colorMin));
                 points[i].startColor = VisualizationColors.Rainbow(c);
             }
             points[i].startSize = 0.03f;
         }
 
         particles.SetParticles(points, numPoints);
+
+        // Create legend text.
+        var legendText = string.Format("<color=white><b>{0}:</b></color>\n", legendLabel);
+        if (categoryLabels != null && numUniqueColors >= 1 && numUniqueColors <= VisualizationColors.Discrete.Keys.Count)
+        {
+            for (var i = 0; i < numUniqueColors; i++)
+            {
+                var c = VisualizationColors.Discrete[numUniqueColors][i];
+                var label = categoryLabels[i];
+                legendText += string.Format("<color=#{0}>{1}</color>\n", VisualizationColors.ColorToHex(c), label);
+            }
+        }
+        else
+        {
+            const float levels = 10.0f;
+            for (var i = (int)levels; i >= 0; i--)
+            {
+                var c = VisualizationColors.Rainbow(i/levels);
+                legendText += string.Format("<color=#{0}><b>@{1}</b></color>\n", VisualizationColors.ColorToHex(c), i == (int)levels ? " - High" : i == 0 ? " - Low" : string.Empty);
+            }
+        }
+        return legendText;
     }
 }
