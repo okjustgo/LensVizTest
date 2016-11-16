@@ -2,6 +2,7 @@
 using System;
 using Assets.Scripts;
 using System.Collections.Generic;
+using UnityEditor;
 
 public class ScatterPlot : MonoBehaviour
 {
@@ -119,7 +120,7 @@ public class ScatterPlot : MonoBehaviour
             for (var i = (int)levels; i >= 0; i--)
             {
                 var c = VisualizationColors.Rainbow(i/levels);
-                legendText += string.Format("<size=7>    <color=#{0}>@{1}</color>\n</size>", VisualizationColors.ColorToHex(c), i == (int)levels ? " - High" : i == 0 ? " - Low" : string.Empty);
+                legendText += string.Format("<size=7>    <color=#{0}>@  {1}</color>\n</size>", VisualizationColors.ColorToHex(c), i == (int)levels ? colorMax.ToString() : i == 0 ? colorMin.ToString() : string.Empty);
             }
         }
         return legendText;
