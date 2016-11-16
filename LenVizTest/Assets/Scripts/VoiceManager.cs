@@ -97,7 +97,7 @@ public class VoiceManager : MonoBehaviour
         //Used for quick testing
         //this.startQR();
 
-        //this.createGraph("Fuel_Economy.hgd");
+        this.createGraph("Fuel_Economy.hgd");
         //this.createGraph("Price_of_Diamonds_by_Quality.hgd");
         
         //this.showOptions();

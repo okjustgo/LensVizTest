@@ -77,6 +77,7 @@ public class Graph : MonoBehaviour {
     private Text xAxis;
     private Text yAxis;
     private Text zAxis;
+    private Text legend;
     private GameObject tooltipPrefab, tooltip, msgObj, statusObj;
 
     private Quaternion prevRotation;
@@ -87,7 +88,9 @@ public class Graph : MonoBehaviour {
 
     // Overrides the cached value of the title's default rotation.
     public Quaternion titleDefaultRotation { get; private set; }
-    
+    public Quaternion legendDefaultRotation { get; private set; }
+    public Vector3 legendDefaultPosition { get; private set; }
+
     public static GameObject createGraph(string dataset)
     {
         var graphPrefab = Resources.Load(@"Graph", typeof(GameObject)) as GameObject;
@@ -110,10 +113,11 @@ public class Graph : MonoBehaviour {
 
     void Awake()
     {
-        title = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
-        xAxis = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/XAxis").gameObject.GetComponent<Text>();
-        yAxis = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/YAxis").gameObject.GetComponent<Text>();
-        zAxis = this.gameObject.GetComponentInChildren<Transform>().Find("Canvas/ZAxis").gameObject.GetComponent<Text>();
+        title = gameObject.GetComponentInChildren<Transform>().Find("Canvas/GraphTitle").gameObject.GetComponent<Text>();
+        xAxis = gameObject.GetComponentInChildren<Transform>().Find("Canvas/XAxis").gameObject.GetComponent<Text>();
+        yAxis = gameObject.GetComponentInChildren<Transform>().Find("Canvas/YAxis").gameObject.GetComponent<Text>();
+        zAxis = gameObject.GetComponentInChildren<Transform>().Find("Canvas/ZAxis").gameObject.GetComponent<Text>();
+        legend = gameObject.GetComponentInChildren<Transform>().Find("Legend/LegendText").gameObject.GetComponent<Text>();
 
         tooltipPrefab = Resources.Load(@"Tooltip", typeof(GameObject)) as GameObject;
         tooltip = Instantiate(tooltipPrefab);
@@ -135,6 +139,8 @@ public class Graph : MonoBehaviour {
 
         // Cache the title's default rotation.
         titleDefaultRotation = title.transform.rotation;
+        legendDefaultRotation = legend.transform.rotation;
+        legendDefaultPosition = legend.transform.position;
     }
 
     void SetMsgText(string text, bool lg, GameObject textObj)
@@ -162,6 +168,7 @@ public class Graph : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         updateTitlePivotAxis();
+        UpdateLegendPivotAxis();
         
         if (this.gameObject.GetComponent<GraphMover>().placing)
         {
@@ -238,7 +245,8 @@ public class Graph : MonoBehaviour {
         // initialize plot
         if (geometry == "point")
         {
-            ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"));
+            var colorIsCategorical = hgd.Mappings.ContainsKey(hgd.Aesthetics["color"]);
+            legend.text = ScatterPlot.Render(gameObject, hgd.GetData("x"), hgd.GetData("y"), hgd.GetData("z"), hgd.GetData("color"), hgd.Aesthetics["color"], colorIsCategorical ? hgd.Mappings[hgd.Aesthetics["color"]] : null);
         }
         if (geometry == "bar")
         {
@@ -366,8 +374,40 @@ public class Graph : MonoBehaviour {
 
         // Calculate and apply the rotation required to reorient the object and apply the default rotation to the result.
         title.transform.rotation = Quaternion.LookRotation(-directionToTarget) * titleDefaultRotation;
-    
-	}
+    }
+
+    private void UpdateLegendPivotAxis()
+    {
+        // Get a Vector that points from the Camera to the target.
+        Vector3 directionToTarget = Camera.main.transform.position - legend.transform.position;
+
+        // If we are right next to the camera the rotation is undefined.
+        if (directionToTarget.sqrMagnitude < Mathf.Epsilon)
+        {
+            return;
+        }
+
+        // Adjust for the pivot axis.
+        switch (pivotAxis)
+        {
+            case PivotAxis.X:
+                directionToTarget.x = legend.transform.position.x;
+                break;
+
+            case PivotAxis.Y:
+                directionToTarget.y = legend.transform.position.y;
+                break;
+
+            case PivotAxis.Free:
+            default:
+                // No changes needed.
+                break;
+        }
+
+        // Calculate and apply the rotation required to reorient the object and apply the default rotation to the result.
+        legend.transform.rotation = Quaternion.LookRotation(-directionToTarget) * legendDefaultRotation;
+        legend.transform.position = ((Quaternion.LookRotation(-directionToTarget) * legendDefaultRotation) * (0.85f * Vector3.right)) + transform.position + (new Vector3(0.0f, -0.2f, 0.0f));
+    }
 
     public void GetDataFromAzure(string containerName, string blobName)
     {
