@@ -238,8 +238,8 @@ public class Graph : MonoBehaviour {
 
         title.text = hgd.Title;
         xAxis.text = hgd.Aesthetics["x"];
-        yAxis.text = hgd.Aesthetics["y"];
-        zAxis.text = hgd.Aesthetics["z"];
+        yAxis.text = hgd.Aesthetics["z"]; 
+        zAxis.text = hgd.Aesthetics["y"];
 
         this.SetMsgText("Rendering...", true, statusObj);
 

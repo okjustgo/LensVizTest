@@ -82,7 +82,7 @@ public class ScatterPlot : MonoBehaviour
             // Scale point to range [0, 1].
             float xVal = (x[i] - 1.0f*xMin) / (1.0f * xMax - 1.0f * xMin) - 0.5f;
             float yVal = (y[i] - 1.0f*yMin) / (1.0f * yMax - 1.0f * yMin) - 0.5f;
-            float zVal = (1.0f - (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin)) - 0.5f;
+            float zVal = (z[i] - 1.0f*zMin) / (1.0f * zMax - 1.0f * zMin) - 0.5f;
             // Flip Z and Y so Z values scale vertically.
             var position = new Vector3(parentScale.x * xVal, parentScale.z * zVal, parentScale.y * yVal);
             points[i].position = parentRotation * position + parentPosition;
