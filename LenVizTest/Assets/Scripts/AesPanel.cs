@@ -12,6 +12,12 @@ public class AesPanel : MonoBehaviour {
     private Dropdown zDropdown;
     private Dropdown colorDropdown;
 
+    void Toggle()
+    {
+        var canvas = this.gameObject.transform.FindChild("Canvas");
+        canvas.gameObject.SetActive(!canvas.gameObject.activeInHierarchy);
+    }
+
     // Use this for initialization
     void Start ()
     {

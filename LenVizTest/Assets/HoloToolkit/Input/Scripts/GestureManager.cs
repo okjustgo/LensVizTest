@@ -454,7 +454,7 @@ namespace HoloToolkit.Unity
             {
                 //Added this to play nice with selectable
                 var eventData = new BaseEventData(EventSystem.current); 
-                FocusedObject.SendMessage("OnSelect", SendMessageOptions.DontRequireReceiver);
+                FocusedObject.SendMessage("OnSelect", eventData, SendMessageOptions.DontRequireReceiver);
                 FocusedObject.SendMessage("OnPointerClick",new PointerEventData(EventSystem.current), SendMessageOptions.DontRequireReceiver);
             }
         }
